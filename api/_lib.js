@@ -2,10 +2,8 @@
 // Environment variables (Vercel → Project → Settings → Environment Variables):
 //   CARD_SECRET     any long random string used to sign card links. Set it once and never change it,
 //                   or links people already shared stop showing their message.
-//   CARD_PRICE_INR  optional: one-time price in rupees shown on the page (default 3)
 const crypto = require('crypto');
 
-const PRICE = Math.max(1, parseInt(process.env.CARD_PRICE_INR || '3', 10) || 3);
 const CARD_SECRET = process.env.CARD_SECRET || '';
 
 const hmac = (key, text) => crypto.createHmac('sha256', key).update(text).digest('base64url');
@@ -30,4 +28,4 @@ function send(res, status, data) {
   res.end(JSON.stringify(data));
 }
 
-module.exports = { PRICE, CARD_SECRET, safeEqual, cardSig, readBody, send };
+module.exports = { CARD_SECRET, safeEqual, cardSig, readBody, send };

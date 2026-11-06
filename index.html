@@ -182,10 +182,7 @@ h1 .who{color:var(--gold)}
 .pay-app:focus-visible{outline:2px solid var(--gold-hi);outline-offset:2px}
 .brand{margin:22px 0 0;text-align:center;font-size:.8rem;letter-spacing:.04em;color:var(--muted)}
 .brand b{font-family:var(--display);font-weight:600;font-size:.95rem;letter-spacing:.02em;color:var(--gold)}
-#unlockBox{margin-top:16px}
-#unlockBox h3 .price{color:var(--gold)}
-#paidBtn{margin-top:10px}
-#shareBox .thanks{margin-top:14px}
+#shareBox{margin-top:16px}
 .status{min-height:1.2em;margin:8px 0 0;font-size:.86rem;font-weight:600;color:#7fd6a8}
 .btn:focus-visible,.chip:focus-visible,.idea:focus-visible,.link:focus-visible,.field input:focus-visible,.field textarea:focus-visible,.other input:focus-visible{outline:2px solid var(--gold-hi);outline-offset:2px}
 
@@ -271,9 +268,38 @@ h1 .who{color:var(--gold)}
       <p class="s-msg" id="msgText"></p>
       <p class="s-sign" id="msgSign"></p>
 
+      <div class="support" id="supportBox">
+        <h3>Liked it? Support the maker</h3>
+        <p>Diyagram is made by <span class="makerName">Aditya</span>. A small thank-you keeps it free for everyone.</p>
+        <div class="chips" role="group" aria-label="Amount">
+          <button class="chip" type="button" data-amt="3" aria-pressed="true">₹3</button>
+          <button class="chip" type="button" data-amt="11" aria-pressed="false">₹11</button>
+          <button class="chip" type="button" data-amt="21" aria-pressed="false">₹21</button>
+          <button class="chip" type="button" data-amt="other" aria-pressed="false">Other</button>
+        </div>
+        <label class="other" id="otherRow" hidden>₹ <input id="otherAmt" type="number" inputmode="numeric" min="1" max="10000" step="1" placeholder="Amount" aria-label="Other amount in rupees"></label>
+        <div class="pay-row"><a class="btn gold block" id="supPay" href="#">Pay ₹3 with any UPI app</a></div>
+        <p class="pay-help" id="payHelp">Opens the list of UPI apps on your phone: Google Pay, PhonePe, Paytm, Amazon Pay, BHIM, iMobile, CRED, your bank's app and more.</p>
+        <div class="apps" role="group" aria-label="Or open a specific app">
+          <a class="pay-app" id="payGpay" href="#" aria-label="Google Pay">GPay</a>
+          <a class="pay-app" id="payPhonepe" href="#">PhonePe</a>
+          <a class="pay-app" id="payPaytm" href="#">Paytm</a>
+        </div>
+        <div class="qr-box">
+          <img class="qr-img" id="qrImg" alt="UPI QR code to support the maker" width="132" height="132">
+          <div class="qr-text">
+            <p id="qrHelp">Using another app? Save this QR, then in your UPI app tap Scan and pick it from your gallery.</p>
+            <a class="link" id="saveQr" href="#" download="diyagram-upi-qr.gif">Save QR</a>
+          </div>
+        </div>
+        <p class="upi" style="margin-top:12px">UPI ID <code class="upiCode"></code> <button class="link" id="copyUpi" type="button">Copy</button></p>
+        <p class="note" id="fallback" hidden>Payment app didn't open? Use the QR above, or copy the UPI ID, open any UPI app and choose "Pay to UPI ID".</p>
+        <p class="thanks" id="thanks" hidden>Thank you for the support 🙏</p>
+      </div>
+
       <div class="make">
         <h3>Send these blessings to someone</h3>
-        <p>Make your own card in 30 seconds. One-time <span class="price">₹3</span>, then send as many as you like.</p>
+        <p>Make your own card in 30 seconds. Free.</p>
         <button class="btn gold block" id="openMaker" type="button">Make your own card</button>
       </div>
       <p class="brand"><b>Diyagram</b> · Send a little light</p>
@@ -298,31 +324,7 @@ h1 .who{color:var(--gold)}
         <button class="btn" id="previewBtn" type="button">Preview</button>
         <button class="btn gold" id="getLink" type="button">Get my link</button>
       </div>
-      <div class="support" id="unlockBox" hidden>
-        <h3>One-time <span class="price">₹3</span> to unlock your cards</h3>
-        <p>Pay once, then make and send cards to everyone you like.</p>
-        <div id="upiBlock">
-          <div class="pay-row"><a class="btn gold block" id="unlockPay" href="#">Pay ₹3 with any UPI app</a></div>
-          <p class="pay-help" id="payHelp">Opens the list of UPI apps on your phone: Google Pay, PhonePe, Paytm, Amazon Pay, BHIM, iMobile, CRED, your bank's app and more.</p>
-          <div class="apps" role="group" aria-label="Or open a specific app">
-            <a class="pay-app" id="payGpay" href="#" aria-label="Google Pay">GPay</a>
-            <a class="pay-app" id="payPhonepe" href="#">PhonePe</a>
-            <a class="pay-app" id="payPaytm" href="#">Paytm</a>
-          </div>
-          <div class="qr-box">
-            <img class="qr-img" id="qrImg" alt="UPI QR code to pay ₹3" width="132" height="132">
-            <div class="qr-text">
-              <p id="qrHelp">Using another app? Save this QR, then in your UPI app tap Scan and pick it from your gallery.</p>
-              <a class="link" id="saveQr" href="#" download="diyagram-upi-qr.gif">Save QR</a>
-            </div>
-          </div>
-          <p class="upi" style="margin-top:12px">UPI ID <code class="upiCode"></code> <button class="link" id="copyUpi2" type="button">Copy</button></p>
-          <p class="note" id="fallback2" hidden>Payment app didn't open? Use the QR above, or copy the UPI ID, open any UPI app, choose "Pay to UPI ID" and send <span class="price">₹3</span>.</p>
-          <button class="link" id="paidBtn" type="button">I've paid, show my link</button>
-        </div>
-      </div>
       <div id="shareBox" hidden>
-        <p class="thanks" id="paidThanks" hidden>Thank you! Your card link is ready.</p>
         <div class="actions">
           <button class="btn" id="previewBtn2" type="button">Preview</button>
           <button class="btn" id="copyLink" type="button">Copy link</button>
@@ -342,7 +344,6 @@ h1 .who{color:var(--gold)}
 'use strict';
 const MAKER = 'Aditya';
 const UPI_ID = 'aditya.shivade3004@axl';
-const CARD_PRICE = 3; // one-time price to unlock card links (₹)
 const DEFAULT_MSG = 'This Diwali, may all of us have the Courage, Commitment, and the Consciousness to make better Humans of ourselves, and, in turn, a better world. Much Love to you and your family.';
 const DEITIES = [
   { key: 'ganesha', dev: 'श्री गणेश', en: 'Shri Ganesha', role: 'Remover of obstacles', mantra: 'ॐ गं गणपतये नमः', wish: 'May every new beginning this year be free of obstacles.', label: 'Ganesha', band: '#d8452a', enamel: ['#e1542f', '#7a130b'], deep: '#8f1d12' },
@@ -1177,32 +1178,52 @@ $('#closeSheet').addEventListener('click', closeSheet);
 $('#againBtn').addEventListener('click', resetExperience);
 document.addEventListener('keydown', e => { if (e.key === 'Escape' && sheet.classList.contains('show')) closeSheet(); });
 
-/* ===== Payment and card links =====
-   Makers pay a one-time price by UPI straight to UPI_ID and get their link as soon as they come back
-   (a UPI link can't report back, so returning to the page, or "I've paid", unlocks it).
+/* ===== Support the maker (UPI) and card links =====
+   Card making is free. The message sheet offers an optional thank-you by UPI straight to UPI_ID.
    When the server has CARD_SECRET set, each card link it signs carries ?s=..., and links are
    checked on open, so an edited link falls back to the default card. */
 const isIOS = /iP(hone|ad|od)/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
 const upiQuery = (a, note) => `pa=${UPI_ID}&pn=${encodeURIComponent(MAKER)}&am=${a}&cu=INR&tn=${encodeURIComponent(String(note).slice(0, 50))}`;
 const payLinks = q => ({ any: 'upi://pay?' + q, gpay: (isIOS ? 'gpay://upi/pay?' : 'tez://upi/pay?') + q, phonepe: 'phonepe://pay?' + q, paytm: 'paytmmp://pay?' + q });
-const showQR = matchMedia('(pointer: fine)').matches || innerWidth >= 600;
+const desktop = matchMedia('(pointer: fine)').matches && innerWidth >= 600;
 function copyText(text, input, btn) {
   const done = () => { setStatus('Copied.'); if (btn) { const t = btn.textContent; btn.textContent = 'Copied'; setTimeout(() => { btn.textContent = t; }, 1500); } };
   const fail = () => { if (input) { input.focus(); input.select(); setStatus('Press and hold the link to copy it.'); } };
   try { navigator.clipboard.writeText(text).then(done, fail); } catch (e) { fail(); }
 }
-const setStatus = (t, bad) => { const el = $('#status'); el.textContent = t || ''; el.style.color = bad ? '#ffb199' : ''; };
-const CFG = { price: CARD_PRICE, api: false };
-const store = { get: k => { try { return localStorage.getItem(k) || ''; } catch (e) { return ''; } }, set: (k, v) => { try { v ? localStorage.setItem(k, v) : localStorage.removeItem(k); } catch (e) {} } };
+const setStatus = t => { $('#status').textContent = t || ''; };
 const post = (url, data) => fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) });
-function paintPrice() { document.querySelectorAll('.price').forEach(el => { el.textContent = '₹' + CFG.price; }); }
+
 document.querySelectorAll('.upiCode').forEach(el => { el.textContent = UPI_ID; });
-if (isIOS) $('#payHelp').textContent = "On iPhone this opens one UPI app. For Google Pay, PhonePe or Paytm tap its button below. For Amazon Pay, BHIM, iMobile, CRED or your bank's app, save the QR and scan it from your gallery.";
-else if (showQR) { $('#payHelp').textContent = 'On a laptop? Scan the QR below with any UPI app on your phone.'; $('#qrHelp').textContent = 'Scan with Google Pay, PhonePe, Paytm, Amazon Pay, BHIM, iMobile, CRED or any UPI app.'; }
-fetch('/api/config', { cache: 'no-store' }).then(r => r.ok ? r.json() : null)
-  .then(j => { if (j && j.price) Object.assign(CFG, { price: j.price, api: true }); })
-  .catch(() => {}).finally(() => { paintPrice(); paintUnlock(); });
-paintPrice();
+document.querySelectorAll('.makerName').forEach(el => { el.textContent = MAKER; });
+if (isIOS) $('#payHelp').textContent = "On iPhone this opens one UPI app. For GPay, PhonePe or Paytm tap its button below. For Amazon Pay, BHIM, iMobile, CRED or your bank's app, save the QR and scan it from your gallery.";
+else if (desktop) { $('#payHelp').textContent = 'On a laptop? Scan the QR below with any UPI app on your phone.'; $('#qrHelp').textContent = 'Scan with GPay, PhonePe, Paytm, Amazon Pay, BHIM, iMobile, CRED or any UPI app.'; }
+
+let amount = 3, payTapped = false, qrFor = '';
+function paintPay() {
+  const ok = amount >= 1, L2 = payLinks(upiQuery(ok ? amount : 1, 'Diyagram thank-you'));
+  const pb = $('#supPay'); pb.textContent = ok ? `Pay ₹${amount} with any UPI app` : 'Enter an amount';
+  pb.href = ok ? L2.any : '#'; $('#payGpay').href = ok ? L2.gpay : '#'; $('#payPhonepe').href = ok ? L2.phonepe : '#'; $('#payPaytm').href = ok ? L2.paytm : '#';
+  if (ok && typeof qrcode === 'function' && qrFor !== L2.any) {
+    try { const qr = qrcode(0, 'M'); qr.addData(L2.any); qr.make(); const url = qr.createDataURL(6, 2); $('#qrImg').src = url; $('#saveQr').href = url; qrFor = L2.any; } catch (e) {}
+  }
+  $('#qrImg').style.opacity = ok ? 1 : .25;
+}
+document.querySelectorAll('.chip').forEach(c => c.addEventListener('click', () => {
+  document.querySelectorAll('.chip').forEach(x => x.setAttribute('aria-pressed', String(x === c)));
+  const other = c.dataset.amt === 'other'; $('#otherRow').hidden = !other;
+  amount = other ? Math.floor(Number($('#otherAmt').value) || 0) : Number(c.dataset.amt);
+  if (other) $('#otherAmt').focus(); paintPay();
+}));
+$('#otherAmt').addEventListener('input', e => { amount = Math.max(0, Math.min(10000, Math.floor(Number(e.target.value) || 0))); paintPay(); });
+['#supPay', '#payGpay', '#payPhonepe', '#payPaytm'].forEach(sel => $(sel).addEventListener('click', e => {
+  if (amount < 1) { e.preventDefault(); return; }
+  payTapped = true; setTimeout(() => { if (document.visibilityState === 'visible') $('#fallback').hidden = false; }, 1600);
+}));
+$('#saveQr').addEventListener('click', () => { payTapped = true; });
+$('#copyUpi').addEventListener('click', () => { payTapped = true; copyText(UPI_ID, null, $('#copyUpi')); });
+document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible' && payTapped) $('#thanks').hidden = false; });
+paintPay();
 
 /* A card that arrived with custom names or a message is shown only once the server vouches for it */
 function checkCard() {
@@ -1216,10 +1237,9 @@ function checkCard() {
     .finally(() => { clearTimeout(t); paintCard(); if (S.mode === 'trio') trioText(); });
 }
 
-/* ===== Make your own ===== */
+/* ===== Make your own (free) ===== */
 const fFrom = $('#fFrom'), fTo = $('#fTo'), fMsg = $('#fMsg');
-let qrFor = '';
-let unlocked = store.get('diyagram-unlocked') === '1', linkSig = '', wantLink = false, unlockTapped = false, busy = false;
+let linkSig = '', busy = false;
 const fields = () => ({ to: fTo.value.trim().slice(0, 30), from: fFrom.value.trim().slice(0, 30), msg: fMsg.value.trim().slice(0, 150) });
 function buildLink() {
   const f = fields(), p = new URLSearchParams();
@@ -1232,42 +1252,20 @@ function updateLink() {
   $('#linkBox').value = link;
   $('#waBtn').href = 'https://wa.me/?text=' + encodeURIComponent(`🪔 ${from} sent you a Diyagram. Light three diyas to receive three blessings: ${link}`);
 }
-function paintUnlock() {
-  const q = upiQuery(CFG.price, `Diyagram card - ${fFrom.value.trim() || 'maker'}`), L2 = payLinks(q);
-  $('#unlockPay').href = L2.any; $('#unlockPay').textContent = `Pay ₹${CFG.price} with any UPI app`;
-  $('#payGpay').href = L2.gpay; $('#payPhonepe').href = L2.phonepe; $('#payPaytm').href = L2.paytm;
-  if (typeof qrcode === 'function' && qrFor !== L2.any) {
-    try { const qr = qrcode(0, 'M'); qr.addData(L2.any); qr.make(); const url = qr.createDataURL(6, 2); $('#qrImg').src = url; $('#saveQr').href = url; qrFor = L2.any; } catch (e) {}
-  }
-  const show = wantLink && unlocked && !!$('#linkBox').dataset.ready;
-  $('#shareBox').hidden = !show; $('#lockedActions').hidden = show; $('#unlockBox').hidden = show || !wantLink || unlocked;
-}
-const scrollTo = sel => setTimeout(() => $(sel).scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'center' }), 60);
+function showShare(on) { $('#shareBox').hidden = !on; $('#lockedActions').hidden = on; }
 /* Ask the server to sign this card; without a server (or a secret) the plain link is used */
-async function revealLink(thanks) {
+async function revealLink() {
   if (busy) return; busy = true; setStatus('Making your link…'); linkSig = '';
-  try { if (CFG.api) { const r = await post('/api/sign', fields()); if (r.ok) linkSig = (await r.json()).s || ''; } } catch (e) {}
-  busy = false; setStatus('');
-  $('#linkBox').dataset.ready = '1'; updateLink(); $('#paidThanks').hidden = !thanks; paintUnlock(); scrollTo('#shareBox');
+  try { const r = await post('/api/sign', fields()); if (r.ok) linkSig = (await r.json()).s || ''; } catch (e) {}
+  busy = false; setStatus(''); updateLink(); showShare(true);
+  setTimeout(() => $('#shareBox').scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'center' }), 60);
 }
-function showUnlock() { $('#unlockBox').hidden = false; paintUnlock(); scrollTo('#unlockBox'); }
-$('#getLink').addEventListener('click', () => { wantLink = true; if (unlocked) revealLink(false); else showUnlock(); });
+$('#getLink').addEventListener('click', revealLink);
 /* Editing the card after the link is made: the old link no longer matches, so make a new one */
-[fFrom, fTo, fMsg].forEach(el => el.addEventListener('input', () => {
-  if ($('#linkBox').dataset.ready) { delete $('#linkBox').dataset.ready; linkSig = ''; setStatus(''); }
-  updateLink(); paintUnlock();
-}));
+[fFrom, fTo, fMsg].forEach(el => el.addEventListener('input', () => { if (!$('#shareBox').hidden) { showShare(false); linkSig = ''; setStatus(''); } updateLink(); }));
 document.querySelectorAll('.idea').forEach(b => b.addEventListener('click', () => { fMsg.value = b.textContent; fMsg.dispatchEvent(new Event('input')); }));
-function unlock() { unlocked = true; store.set('diyagram-unlocked', '1'); wantLink = true; revealLink(true); }
-['#unlockPay', '#payGpay', '#payPhonepe', '#payPaytm'].forEach(sel => $(sel).addEventListener('click', () => {
-  unlockTapped = true; setTimeout(() => { if (document.visibilityState === 'visible' && !unlocked) $('#fallback2').hidden = false; }, 1600);
-}));
-$('#paidBtn').addEventListener('click', unlock);
-$('#copyUpi2').addEventListener('click', () => { unlockTapped = true; copyText(UPI_ID, null, $('#copyUpi2')); });
-$('#saveQr').addEventListener('click', () => { unlockTapped = true; });
-document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible' && unlockTapped && !unlocked) unlock(); });
 
-$('#openMaker').addEventListener('click', () => { showPane('maker'); updateLink(); paintUnlock(); fFrom.focus({ preventScroll: true }); });
+$('#openMaker').addEventListener('click', () => { showPane('maker'); updateLink(); fFrom.focus({ preventScroll: true }); });
 $('#backBtn').addEventListener('click', () => showPane('msg'));
 $('#copyLink').addEventListener('click', () => copyText($('#linkBox').value, $('#linkBox'), $('#copyLink')));
 function previewCard() {
