@@ -1,8 +1,13 @@
 {
   "headers": [
     {
-      "source": "/(.*)\\.(mp4|jpg|svg)",
-      "headers": [{ "key": "Cache-Control", "value": "public, max-age=604800" }]
+      "source": "/(.*)\\.(mp4|jpg|svg|js)",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=604800"
+        }
+      ]
     }
   ]
 }

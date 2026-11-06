@@ -21,11 +21,15 @@
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:image" content="https://diyagram.vercel.app/og-v2.jpg">
 <style>[hidden]{display:none!important}html{color-scheme:dark}body{margin:0}</style>
-</head>
-<body>
+<!-- fonts -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Eczar:wght@500;600;700&family=Hind:wght@400;500;600&family=Tiro+Devanagari+Sanskrit&display=swap">
+<link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Eczar:wght@600&family=Hind:wght@400;500;600&family=Tiro+Devanagari+Sanskrit&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Eczar:wght@600&family=Hind:wght@400;500;600&family=Tiro+Devanagari+Sanskrit&display=swap" media="print" onload="this.media='all'">
+<noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Eczar:wght@600&family=Hind:wght@400;500;600&family=Tiro+Devanagari+Sanskrit&display=swap"></noscript>
+<!-- /fonts -->
+</head>
+<body>
 <style>
 /* Layout: one phone screen. A carved jharokha window looks out on the town on Amavasya night
    (stars, no moon). Each blessing hangs in it as a meenakari gold pendant. The blessing text sits
@@ -343,7 +347,6 @@ h1 .who{color:var(--gold)}
   </div>
 </aside>
 
-<script src="/qrcode.js"></script>
 <script>
 (() => {
 'use strict';
@@ -358,9 +361,9 @@ const DEITIES = [
 /* Animated darshan for each deity (clip's last second dissolves back into the frame at loopAt).
    box = [centre x, centre y, width, height] of the part that must stay in view, as fractions of the clip */
 const VIDS = [
-  { src: 'ganesha.mp4', loopAt: 1.5, fy: .55, img: 'ganesha.jpg' },
-  { src: 'saraswati-v2.mp4', loopAt: 1.5, box: [.54, .615, .9, .68], img: 'saraswati-v2.jpg' },
-  { src: 'lakshmi-v2.mp4', loopAt: 1.5, box: [.54, .49, .84, .46], img: 'lakshmi-v2.jpg' }
+  { src: 'ganesha-v3.mp4', loopAt: 1.5, fy: .55, img: 'ganesha.jpg' },
+  { src: 'saraswati-v3.mp4', loopAt: 1.5, box: [.54, .615, .9, .68], img: 'saraswati-v2.jpg' },
+  { src: 'lakshmi-v3.mp4', loopAt: 1.5, box: [.54, .49, .84, .46], img: 'lakshmi-v2.jpg' }
 ];
 const ART = [];
 const NUMS = ['१', '२', '३'];
@@ -1058,7 +1061,7 @@ DEITIES.forEach((d, k) => {
 /* ===== Deity animations ===== */
 const vids = VIDS.map((cfg, k) => {
   const v = document.createElement('video');
-  v.className = 'vsrc'; v.muted = true; v.defaultMuted = true; v.playsInline = true; v.preload = 'auto';
+  v.className = 'vsrc'; v.muted = true; v.defaultMuted = true; v.playsInline = true; v.preload = 'none';
   v.setAttribute('muted', ''); v.setAttribute('playsinline', ''); v.setAttribute('webkit-playsinline', ''); v.setAttribute('aria-hidden', 'true');
   v.addEventListener('ended', () => { v.currentTime = cfg.loopAt; if (S.mode === 'deity' && S.show === k) v.play().catch(() => {}); });
   let retried = false;
@@ -1075,15 +1078,35 @@ function playVid(k) {
   const p = v.play(); if (p && p.catch) p.catch(() => {});
 }
 function pauseVids() { vids.forEach(v => { if (!v.paused) v.pause(); }); }
-function primeVids(except) {
-  if (S.primed) return; S.primed = true;
-  vids.forEach((v, j) => { if (j === except) return; const p = v.play(); if (p && p.then) p.then(() => { if (!(S.mode === 'deity' && S.show === j)) { v.pause(); try { v.currentTime = 0; } catch (e) {} } }).catch(() => {}); });
+/* Nothing heavy loads before the page is showing. Then the clips download one at a time,
+   Ganesha first (a tapped diya always starts its own clip at once), followed by the
+   pendant stills and the QR library. */
+let warmed = 0;
+function warmNext() {
+  if (warmed >= vids.length) return;
+  const v = vids[warmed++];
+  if (v.readyState >= 3 || !v.paused || v.currentTime > 0) return warmNext();
+  let done = false; const next = () => { if (!done) { done = true; warmNext(); } };
+  v.addEventListener('canplaythrough', next, { once: true }); v.addEventListener('error', next, { once: true }); setTimeout(next, 9000);
+  v.preload = 'auto'; try { v.load(); } catch (e) { next(); }
 }
-VIDS.forEach((cfg, k) => {
-  const im = new Image();
-  im.onload = () => { ART[k] = im; if (PW) { const w = PW; PW = 0; sizePendants(w); } };
-  im.src = cfg.img;
-});
+function loadArt() {
+  VIDS.forEach((cfg, k) => {
+    const im = new Image();
+    im.onload = () => { ART[k] = im; if (PW) { const w = PW; PW = 0; sizePendants(w); } };
+    im.src = cfg.img;
+  });
+}
+const QR_SRC = '/qrcode.js';
+let qrLoad = null;
+function loadQR() {
+  if (typeof qrcode === 'function') return Promise.resolve();
+  return qrLoad || (qrLoad = new Promise((ok, no) => { const s = document.createElement('script'); s.src = QR_SRC; s.onload = ok; s.onerror = () => { qrLoad = null; no(); }; document.head.appendChild(s); }));
+}
+let warmStarted = false;
+function warmUp() { if (warmStarted) return; warmStarted = true; warmNext(); setTimeout(loadArt, 1500); setTimeout(() => loadQR().then(() => paintPay()).catch(() => {}), 2500); }
+if (document.readyState === 'complete') setTimeout(warmUp, 200); else addEventListener('load', () => setTimeout(warmUp, 200), { once: true });
+setTimeout(warmUp, 3000);
 
 let PW = 0;
 function sizePendants(w) {
@@ -1144,7 +1167,7 @@ function tapDiya(i) {
 }
 function showDeity(k, fresh) {
   S.mode = 'deity'; S.show = k; $('#shloka').classList.add('gone');
-  playVid(k); primeVids(k);
+  playVid(k); warmUp();
   S.vOn = vidOK(k); S.fb = false; clearTimeout(S.fbT);
   S.fbT = setTimeout(() => { S.fb = true; placePendants(); }, 1200);
   placePendants();
@@ -1177,7 +1200,7 @@ function resetExperience() {
 /* ===== Sheet ===== */
 const sheet = $('#sheet');
 function showPane(p) { $('#msgPane').hidden = p !== 'msg'; $('#makerPane').hidden = p !== 'maker'; sheet.querySelector('.sheet-body').scrollTop = 0; }
-function openSheet() { clearTimeout(S.sheetT); showPane('msg'); sheet.inert = false; sheet.setAttribute('aria-hidden', 'false'); sheet.classList.add('show'); setTimeout(() => $('#closeSheet').focus({ preventScroll: true }), 350); }
+function openSheet() { loadQR().then(() => paintPay()).catch(() => {}); clearTimeout(S.sheetT); showPane('msg'); sheet.inert = false; sheet.setAttribute('aria-hidden', 'false'); sheet.classList.add('show'); setTimeout(() => $('#closeSheet').focus({ preventScroll: true }), 350); }
 function closeSheet() { sheet.classList.remove('show'); sheet.setAttribute('aria-hidden', 'true'); sheet.inert = true; }
 $('#closeSheet').addEventListener('click', closeSheet);
 $('#againBtn').addEventListener('click', resetExperience);
