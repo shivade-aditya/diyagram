@@ -46,7 +46,7 @@
   --rangoli:64px;
   color-scheme:dark;
 }
-html{height:100%;box-sizing:border-box;overflow:hidden}
+html{height:100%;box-sizing:border-box;overflow:hidden;-webkit-text-size-adjust:100%;text-size-adjust:100%}
 body{height:100%;background:var(--kajal);color:var(--text);font-family:var(--body);overflow:hidden;-webkit-tap-highlight-color:transparent;-webkit-user-select:none;user-select:none}
 .layer{position:fixed;inset:0;width:100%;height:100%;display:block;pointer-events:none}
 #bg{z-index:0}
@@ -172,8 +172,13 @@ h1 .who{color:var(--gold)}
 .actions{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:16px}
 .actions .wa{grid-column:1/-1}
 .linkbox{box-sizing:border-box;width:100%;margin-top:10px;padding:8px 10px;border-radius:8px;border:1px solid var(--line);background:#120906;color:var(--muted);font:400 .8rem var(--body)}
-.apps{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
-.pay-app{flex:1 1 0;min-width:5.2rem;display:inline-flex;align-items:center;justify-content:center;min-height:42px;padding:0 8px;white-space:nowrap;border-radius:999px;border:1px solid var(--line);color:var(--text);text-decoration:none;font:600 .9rem var(--body);background:rgba(0,0,0,.18)}
+.pay-help{margin:8px 0 0;font-size:.82rem;line-height:1.4;color:var(--muted)}
+.qr-box{display:flex;align-items:center;gap:14px;margin-top:14px}
+.qr-img{flex:none;width:132px;height:132px;box-sizing:border-box;padding:6px;border-radius:10px;background:#fff;image-rendering:pixelated;-webkit-touch-callout:default;-webkit-user-select:auto;user-select:auto}
+.qr-text{min-width:0;display:flex;flex-direction:column;align-items:flex-start;gap:6px}
+.qr-text p{margin:0;font-size:.84rem;line-height:1.4;color:var(--muted)}
+.apps{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-top:10px}
+.pay-app{min-width:0;display:flex;align-items:center;justify-content:center;min-height:42px;padding:0 4px;border-radius:999px;border:1px solid var(--line);color:var(--text);text-decoration:none;font:600 clamp(.72rem,3.3vw,.9rem)/1 var(--body);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;background:rgba(0,0,0,.18)}
 .pay-app:focus-visible{outline:2px solid var(--gold-hi);outline-offset:2px}
 .brand{margin:22px 0 0;text-align:center;font-size:.8rem;letter-spacing:.04em;color:var(--muted)}
 .brand b{font-family:var(--display);font-weight:600;font-size:.95rem;letter-spacing:.02em;color:var(--gold)}
@@ -298,17 +303,21 @@ h1 .who{color:var(--gold)}
         <p>Pay once, then make and send cards to everyone you like.</p>
         <div id="upiBlock">
           <div class="pay-row"><a class="btn gold block" id="unlockPay" href="#">Pay ₹3 with any UPI app</a></div>
+          <p class="pay-help" id="payHelp">Opens the list of UPI apps on your phone: Google Pay, PhonePe, Paytm, Amazon Pay, BHIM, iMobile, CRED, your bank's app and more.</p>
           <div class="apps" role="group" aria-label="Or open a specific app">
-            <a class="pay-app" id="payGpay" href="#">Google Pay</a>
+            <a class="pay-app" id="payGpay" href="#" aria-label="Google Pay">GPay</a>
             <a class="pay-app" id="payPhonepe" href="#">PhonePe</a>
             <a class="pay-app" id="payPaytm" href="#">Paytm</a>
           </div>
-          <p class="upi" style="margin-top:12px">UPI ID <code class="upiCode"></code> <button class="link" id="copyUpi2" type="button">Copy</button></p>
-          <div class="qr-wrap" id="qrWrap2" hidden>
-            <div class="qr" id="qr2" role="img" aria-label="UPI QR code"></div>
-            <p class="note" style="margin:0;color:var(--muted)">On a laptop? Scan this with any UPI app on your phone.</p>
+          <div class="qr-box">
+            <img class="qr-img" id="qrImg" alt="UPI QR code to pay ₹3" width="132" height="132">
+            <div class="qr-text">
+              <p id="qrHelp">Using another app? Save this QR, then in your UPI app tap Scan and pick it from your gallery.</p>
+              <a class="link" id="saveQr" href="#" download="diyagram-upi-qr.gif">Save QR</a>
+            </div>
           </div>
-          <p class="note" id="fallback2" hidden>Payment app didn't open? Copy the UPI ID, open GPay, PhonePe or Paytm, choose "Pay to UPI ID" and send <span class="price">₹3</span>.</p>
+          <p class="upi" style="margin-top:12px">UPI ID <code class="upiCode"></code> <button class="link" id="copyUpi2" type="button">Copy</button></p>
+          <p class="note" id="fallback2" hidden>Payment app didn't open? Use the QR above, or copy the UPI ID, open any UPI app, choose "Pay to UPI ID" and send <span class="price">₹3</span>.</p>
           <button class="link" id="paidBtn" type="button">I've paid, show my link</button>
         </div>
       </div>
@@ -327,7 +336,7 @@ h1 .who{color:var(--gold)}
   </div>
 </aside>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js"></script>
+<script src="/qrcode.js"></script>
 <script>
 (() => {
 'use strict';
@@ -1188,6 +1197,8 @@ const store = { get: k => { try { return localStorage.getItem(k) || ''; } catch 
 const post = (url, data) => fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) });
 function paintPrice() { document.querySelectorAll('.price').forEach(el => { el.textContent = '₹' + CFG.price; }); }
 document.querySelectorAll('.upiCode').forEach(el => { el.textContent = UPI_ID; });
+if (isIOS) $('#payHelp').textContent = "On iPhone this opens one UPI app. For Google Pay, PhonePe or Paytm tap its button below. For Amazon Pay, BHIM, iMobile, CRED or your bank's app, save the QR and scan it from your gallery.";
+else if (showQR) { $('#payHelp').textContent = 'On a laptop? Scan the QR below with any UPI app on your phone.'; $('#qrHelp').textContent = 'Scan with Google Pay, PhonePe, Paytm, Amazon Pay, BHIM, iMobile, CRED or any UPI app.'; }
 fetch('/api/config', { cache: 'no-store' }).then(r => r.ok ? r.json() : null)
   .then(j => { if (j && j.price) Object.assign(CFG, { price: j.price, api: true }); })
   .catch(() => {}).finally(() => { paintPrice(); paintUnlock(); });
@@ -1207,6 +1218,7 @@ function checkCard() {
 
 /* ===== Make your own ===== */
 const fFrom = $('#fFrom'), fTo = $('#fTo'), fMsg = $('#fMsg');
+let qrFor = '';
 let unlocked = store.get('diyagram-unlocked') === '1', linkSig = '', wantLink = false, unlockTapped = false, busy = false;
 const fields = () => ({ to: fTo.value.trim().slice(0, 30), from: fFrom.value.trim().slice(0, 30), msg: fMsg.value.trim().slice(0, 150) });
 function buildLink() {
@@ -1224,8 +1236,8 @@ function paintUnlock() {
   const q = upiQuery(CFG.price, `Diyagram card - ${fFrom.value.trim() || 'maker'}`), L2 = payLinks(q);
   $('#unlockPay').href = L2.any; $('#unlockPay').textContent = `Pay ₹${CFG.price} with any UPI app`;
   $('#payGpay').href = L2.gpay; $('#payPhonepe').href = L2.phonepe; $('#payPaytm').href = L2.paytm;
-  if (showQR && !$('#unlockBox').hidden && typeof qrcode === 'function') {
-    try { const qr = qrcode(0, 'M'); qr.addData(L2.any); qr.make(); $('#qr2').innerHTML = qr.createSvgTag({ cellSize: 3, margin: 0, scalable: true }); $('#qrWrap2').hidden = false; } catch (e) { $('#qrWrap2').hidden = true; }
+  if (typeof qrcode === 'function' && qrFor !== L2.any) {
+    try { const qr = qrcode(0, 'M'); qr.addData(L2.any); qr.make(); const url = qr.createDataURL(6, 2); $('#qrImg').src = url; $('#saveQr').href = url; qrFor = L2.any; } catch (e) {}
   }
   const show = wantLink && unlocked && !!$('#linkBox').dataset.ready;
   $('#shareBox').hidden = !show; $('#lockedActions').hidden = show; $('#unlockBox').hidden = show || !wantLink || unlocked;
@@ -1251,7 +1263,8 @@ function unlock() { unlocked = true; store.set('diyagram-unlocked', '1'); wantLi
   unlockTapped = true; setTimeout(() => { if (document.visibilityState === 'visible' && !unlocked) $('#fallback2').hidden = false; }, 1600);
 }));
 $('#paidBtn').addEventListener('click', unlock);
-$('#copyUpi2').addEventListener('click', () => copyText(UPI_ID, null, $('#copyUpi2')));
+$('#copyUpi2').addEventListener('click', () => { unlockTapped = true; copyText(UPI_ID, null, $('#copyUpi2')); });
+$('#saveQr').addEventListener('click', () => { unlockTapped = true; });
 document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible' && unlockTapped && !unlocked) unlock(); });
 
 $('#openMaker').addEventListener('click', () => { showPane('maker'); updateLink(); paintUnlock(); fFrom.focus({ preventScroll: true }); });
