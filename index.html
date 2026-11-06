@@ -1211,7 +1211,7 @@ document.addEventListener('keydown', e => { if (e.key === 'Escape' && sheet.clas
    When the server has CARD_SECRET set, each card link it signs carries ?s=..., and links are
    checked on open, so an edited link falls back to the default card. */
 const isIOS = /iP(hone|ad|od)/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
-const upiQuery = (a, note) => `pa=${UPI_ID}&pn=${encodeURIComponent(MAKER)}&am=${a}&cu=INR&tn=${encodeURIComponent(String(note).slice(0, 50))}`;
+const upiQuery = (a, note) => `pa=${UPI_ID}&pn=${encodeURIComponent(MAKER)}&am=${Number(a).toFixed(2)}&cu=INR&tn=${encodeURIComponent(String(note).slice(0, 50))}`;
 const payLinks = q => ({ any: 'upi://pay?' + q, gpay: (isIOS ? 'gpay://upi/pay?' : 'tez://upi/pay?') + q, phonepe: 'phonepe://pay?' + q, paytm: 'paytmmp://pay?' + q });
 const isMobile = /Android|iPhone|iPad|iPod|Mobile|Silk|KAIOS/i.test(navigator.userAgent) || (navigator.maxTouchPoints > 1 && /Macintosh/.test(navigator.userAgent));
 const framed = (() => { try { return window.top !== window.self; } catch (e) { return true; } })();
