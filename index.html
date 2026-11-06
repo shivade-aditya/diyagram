@@ -168,6 +168,9 @@ h1 .who{color:var(--gold)}
 .actions{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:16px}
 .actions .wa{grid-column:1/-1}
 .linkbox{box-sizing:border-box;width:100%;margin-top:10px;padding:8px 10px;border-radius:8px;border:1px solid var(--line);background:#120906;color:var(--muted);font:400 .8rem var(--body)}
+.apps{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.app{flex:1 1 0;min-width:5.2rem;display:inline-flex;align-items:center;justify-content:center;min-height:42px;padding:0 8px;white-space:nowrap;border-radius:999px;border:1px solid var(--line);color:var(--text);text-decoration:none;font:600 .9rem var(--body);background:rgba(0,0,0,.18)}
+.app:focus-visible{outline:2px solid var(--gold-hi);outline-offset:2px}
 .brand{margin:22px 0 0;text-align:center;font-size:.8rem;letter-spacing:.04em;color:var(--muted)}
 .brand b{font-family:var(--display);font-weight:600;font-size:.95rem;letter-spacing:.02em;color:var(--gold)}
 #unlockBox{margin-top:16px}
@@ -266,15 +269,14 @@ h1 .who{color:var(--gold)}
       <div class="support" id="unlockBox" hidden>
         <h3>One-time <span class="price">₹3</span> to unlock your cards</h3>
         <p>Pay once, then make and send cards to everyone you like.</p>
-        <div id="rzpBlock" hidden>
-          <div class="pay-row"><button class="btn gold" id="rzpPay" type="button">Pay ₹3 securely</button></div>
-          <p class="note" style="color:var(--muted)">UPI, cards and wallets, through Razorpay.</p>
-        </div>
         <div id="upiBlock">
-          <div class="pay-row">
-            <a class="btn gold" id="unlockPay" href="#">Pay ₹3 with UPI</a>
-            <span class="upi">UPI ID <code class="upiCode"></code> <button class="link" id="copyUpi2" type="button">Copy</button></span>
+          <div class="pay-row"><a class="btn gold block" id="unlockPay" href="#">Pay ₹3 with any UPI app</a></div>
+          <div class="apps" role="group" aria-label="Or open a specific app">
+            <a class="app" id="payGpay" href="#">Google Pay</a>
+            <a class="app" id="payPhonepe" href="#">PhonePe</a>
+            <a class="app" id="payPaytm" href="#">Paytm</a>
           </div>
+          <p class="upi" style="margin-top:12px">UPI ID <code class="upiCode"></code> <button class="link" id="copyUpi2" type="button">Copy</button></p>
           <div class="qr-wrap" id="qrWrap2" hidden>
             <div class="qr" id="qr2" role="img" aria-label="UPI QR code"></div>
             <p class="note" style="margin:0;color:var(--muted)">On a laptop? Scan this with any UPI app on your phone.</p>
@@ -1139,12 +1141,14 @@ $('#closeSheet').addEventListener('click', closeSheet);
 $('#againBtn').addEventListener('click', resetExperience);
 document.addEventListener('keydown', e => { if (e.key === 'Escape' && sheet.classList.contains('show')) closeSheet(); });
 
-/* ===== Payments and card links =====
-   With Razorpay keys set on the server, a maker pays once through Razorpay Checkout, the server
-   verifies the payment and returns an unlock token, and every card link it signs carries ?s=...
-   Card links are checked on open, so an edited link falls back to the default card.
-   Without keys (or in a preview with no server) it falls back to the honour-system UPI step. */
-const upiLink = (a, note) => `upi://pay?pa=${UPI_ID}&pn=${encodeURIComponent(MAKER)}&am=${a}&cu=INR&tn=${encodeURIComponent(String(note).slice(0, 50))}`;
+/* ===== Payment and card links =====
+   Makers pay a one-time price by UPI straight to UPI_ID and get their link as soon as they come back
+   (a UPI link can't report back, so returning to the page, or "I've paid", unlocks it).
+   When the server has CARD_SECRET set, each card link it signs carries ?s=..., and links are
+   checked on open, so an edited link falls back to the default card. */
+const isIOS = /iP(hone|ad|od)/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+const upiQuery = (a, note) => `pa=${UPI_ID}&pn=${encodeURIComponent(MAKER)}&am=${a}&cu=INR&tn=${encodeURIComponent(String(note).slice(0, 50))}`;
+const payLinks = q => ({ any: 'upi://pay?' + q, gpay: (isIOS ? 'gpay://upi/pay?' : 'tez://upi/pay?') + q, phonepe: 'phonepe://pay?' + q, paytm: 'paytmmp://pay?' + q });
 const showQR = matchMedia('(pointer: fine)').matches || innerWidth >= 600;
 function copyText(text, input, btn) {
   const done = () => { setStatus('Copied.'); if (btn) { const t = btn.textContent; btn.textContent = 'Copied'; setTimeout(() => { btn.textContent = t; }, 1500); } };
@@ -1152,17 +1156,13 @@ function copyText(text, input, btn) {
   try { navigator.clipboard.writeText(text).then(done, fail); } catch (e) { fail(); }
 }
 const setStatus = (t, bad) => { const el = $('#status'); el.textContent = t || ''; el.style.color = bad ? '#ffb199' : ''; };
-const CFG = { pay: 'upi', price: CARD_PRICE, keyId: null, api: false };
+const CFG = { price: CARD_PRICE, api: false };
 const store = { get: k => { try { return localStorage.getItem(k) || ''; } catch (e) { return ''; } }, set: (k, v) => { try { v ? localStorage.setItem(k, v) : localStorage.removeItem(k); } catch (e) {} } };
 const post = (url, data) => fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) });
-function paintPrice() {
-  document.querySelectorAll('.price').forEach(el => { el.textContent = '₹' + CFG.price; });
-  $('#rzpPay').textContent = `Pay ₹${CFG.price} securely`;
-  const rz = CFG.pay === 'razorpay'; $('#rzpBlock').hidden = !rz; $('#upiBlock').hidden = rz;
-}
+function paintPrice() { document.querySelectorAll('.price').forEach(el => { el.textContent = '₹' + CFG.price; }); }
 document.querySelectorAll('.upiCode').forEach(el => { el.textContent = UPI_ID; });
 fetch('/api/config', { cache: 'no-store' }).then(r => r.ok ? r.json() : null)
-  .then(j => { if (j && j.pay) Object.assign(CFG, { pay: j.pay, price: j.price || CARD_PRICE, keyId: j.keyId || null, api: true }); })
+  .then(j => { if (j && j.price) Object.assign(CFG, { price: j.price, api: true }); })
   .catch(() => {}).finally(() => { paintPrice(); paintUnlock(); });
 paintPrice();
 
@@ -1180,8 +1180,7 @@ function checkCard() {
 
 /* ===== Make your own ===== */
 const fFrom = $('#fFrom'), fTo = $('#fTo'), fMsg = $('#fMsg');
-let token = store.get('diyagram-token'), honour = store.get('diyagram-unlocked') === '1', linkSig = '', wantLink = false, unlockTapped = false, busy = false;
-const unlocked = () => CFG.pay === 'razorpay' ? !!token : honour;
+let unlocked = store.get('diyagram-unlocked') === '1', linkSig = '', wantLink = false, unlockTapped = false, busy = false;
 const fields = () => ({ to: fTo.value.trim().slice(0, 30), from: fFrom.value.trim().slice(0, 30), msg: fMsg.value.trim().slice(0, 150) });
 function buildLink() {
   const f = fields(), p = new URLSearchParams();
@@ -1195,83 +1194,38 @@ function updateLink() {
   $('#waBtn').href = 'https://wa.me/?text=' + encodeURIComponent(`🪔 ${from} sent you a Diyagram. Light three diyas to receive three blessings: ${link}`);
 }
 function paintUnlock() {
-  if (CFG.pay !== 'razorpay') {
-    const link = upiLink(CFG.price, `Diyagram card - ${fFrom.value.trim() || 'maker'}`);
-    $('#unlockPay').href = link; $('#unlockPay').textContent = `Pay ₹${CFG.price} with UPI`;
-    if (showQR && !$('#unlockBox').hidden && typeof qrcode === 'function') {
-      try { const q = qrcode(0, 'M'); q.addData(link); q.make(); $('#qr2').innerHTML = q.createSvgTag({ cellSize: 3, margin: 0, scalable: true }); $('#qrWrap2').hidden = false; } catch (e) { $('#qrWrap2').hidden = true; }
-    }
+  const q = upiQuery(CFG.price, `Diyagram card - ${fFrom.value.trim() || 'maker'}`), L2 = payLinks(q);
+  $('#unlockPay').href = L2.any; $('#unlockPay').textContent = `Pay ₹${CFG.price} with any UPI app`;
+  $('#payGpay').href = L2.gpay; $('#payPhonepe').href = L2.phonepe; $('#payPaytm').href = L2.paytm;
+  if (showQR && !$('#unlockBox').hidden && typeof qrcode === 'function') {
+    try { const qr = qrcode(0, 'M'); qr.addData(L2.any); qr.make(); $('#qr2').innerHTML = qr.createSvgTag({ cellSize: 3, margin: 0, scalable: true }); $('#qrWrap2').hidden = false; } catch (e) { $('#qrWrap2').hidden = true; }
   }
-  const show = wantLink && unlocked() && !!$('#linkBox').dataset.ready;
-  $('#shareBox').hidden = !show; $('#lockedActions').hidden = show; $('#unlockBox').hidden = show || !wantLink || unlocked();
+  const show = wantLink && unlocked && !!$('#linkBox').dataset.ready;
+  $('#shareBox').hidden = !show; $('#lockedActions').hidden = show; $('#unlockBox').hidden = show || !wantLink || unlocked;
 }
 const scrollTo = sel => setTimeout(() => $(sel).scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'center' }), 60);
-/* Ask the server to sign this card (Razorpay mode needs the unlock token) */
+/* Ask the server to sign this card; without a server (or a secret) the plain link is used */
 async function revealLink(thanks) {
-  if (busy) return; busy = true; setStatus('Making your link…');
-  linkSig = '';
-  try {
-    if (CFG.api) {
-      const r = await post('/api/sign', { token, ...fields() });
-      if (r.status === 402) { token = ''; store.set('diyagram-token', ''); delete $('#linkBox').dataset.ready; busy = false; setStatus(''); showUnlock(); return; }
-      if (!r.ok) throw new Error('sign ' + r.status);
-      linkSig = (await r.json()).s || '';
-    }
-  } catch (e) {
-    busy = false;
-    if (CFG.pay === 'razorpay') { setStatus("Couldn't make your link. Check your internet and tap Get my link again.", true); return; }
-  }
+  if (busy) return; busy = true; setStatus('Making your link…'); linkSig = '';
+  try { if (CFG.api) { const r = await post('/api/sign', fields()); if (r.ok) linkSig = (await r.json()).s || ''; } } catch (e) {}
   busy = false; setStatus('');
   $('#linkBox').dataset.ready = '1'; updateLink(); $('#paidThanks').hidden = !thanks; paintUnlock(); scrollTo('#shareBox');
 }
 function showUnlock() { $('#unlockBox').hidden = false; paintUnlock(); scrollTo('#unlockBox'); }
-$('#getLink').addEventListener('click', () => { wantLink = true; if (unlocked()) revealLink(false); else showUnlock(); });
+$('#getLink').addEventListener('click', () => { wantLink = true; if (unlocked) revealLink(false); else showUnlock(); });
 /* Editing the card after the link is made: the old link no longer matches, so make a new one */
 [fFrom, fTo, fMsg].forEach(el => el.addEventListener('input', () => {
-  if ($('#linkBox').dataset.ready) { delete $('#linkBox').dataset.ready; linkSig = ''; setStatus(''); paintUnlock(); }
-  updateLink(); if (CFG.pay !== 'razorpay') paintUnlock();
+  if ($('#linkBox').dataset.ready) { delete $('#linkBox').dataset.ready; linkSig = ''; setStatus(''); }
+  updateLink(); paintUnlock();
 }));
 document.querySelectorAll('.idea').forEach(b => b.addEventListener('click', () => { fMsg.value = b.textContent; fMsg.dispatchEvent(new Event('input')); }));
-
-/* Razorpay Checkout */
-let rzpLoad = null;
-function loadCheckout() {
-  if (window.Razorpay) return Promise.resolve();
-  return rzpLoad || (rzpLoad = new Promise((ok, no) => { const s = document.createElement('script'); s.src = 'https://checkout.razorpay.com/v1/checkout.js'; s.onload = ok; s.onerror = () => { rzpLoad = null; no(new Error('checkout')); }; document.head.appendChild(s); }));
-}
-$('#rzpPay').addEventListener('click', async () => {
-  if (busy) return; busy = true; const btn = $('#rzpPay'); btn.disabled = true; setStatus('Opening secure payment…');
-  try {
-    const [, r] = await Promise.all([loadCheckout(), post('/api/order', { from: fields().from })]);
-    if (!r.ok) throw new Error('order ' + r.status);
-    const o = await r.json();
-    const rzp = new window.Razorpay({
-      key: o.keyId, order_id: o.orderId, amount: o.amount, currency: o.currency || 'INR',
-      name: 'Diyagram', description: `Unlock card making (one-time ₹${CFG.price})`,
-      notes: { maker: fields().from }, theme: { color: '#d99a2f' },
-      handler: async resp => {
-        setStatus('Confirming your payment…');
-        try {
-          const v = await post('/api/verify', resp);
-          if (!v.ok) throw new Error('verify ' + v.status);
-          token = (await v.json()).token || ''; if (!token) throw new Error('no token');
-          store.set('diyagram-token', token); busy = false; btn.disabled = false;
-          revealLink(true);
-        } catch (e) { busy = false; btn.disabled = false; setStatus("We couldn't confirm the payment yet. If money left your account, write to us with the payment ID and we'll sort it out.", true); }
-      },
-      modal: { ondismiss: () => { busy = false; btn.disabled = false; if (!token) setStatus('Payment not completed. You can try again any time.'); } }
-    });
-    rzp.on('payment.failed', () => setStatus('That payment failed. Please try again.', true));
-    setStatus(''); rzp.open();
-  } catch (e) { busy = false; btn.disabled = false; setStatus("Couldn't open the payment. Check your internet and try again.", true); }
-});
-
-/* Honour-system UPI fallback (used only until Razorpay keys are set on the server) */
-$('#unlockPay').addEventListener('click', () => { unlockTapped = true; setTimeout(() => { if (document.visibilityState === 'visible') $('#fallback2').hidden = false; }, 1600); });
-function honourUnlock() { honour = true; store.set('diyagram-unlocked', '1'); wantLink = true; revealLink(true); }
-$('#paidBtn').addEventListener('click', honourUnlock);
+function unlock() { unlocked = true; store.set('diyagram-unlocked', '1'); wantLink = true; revealLink(true); }
+['#unlockPay', '#payGpay', '#payPhonepe', '#payPaytm'].forEach(sel => $(sel).addEventListener('click', () => {
+  unlockTapped = true; setTimeout(() => { if (document.visibilityState === 'visible' && !unlocked) $('#fallback2').hidden = false; }, 1600);
+}));
+$('#paidBtn').addEventListener('click', unlock);
 $('#copyUpi2').addEventListener('click', () => copyText(UPI_ID, null, $('#copyUpi2')));
-document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible' && unlockTapped && CFG.pay !== 'razorpay' && !honour) honourUnlock(); });
+document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible' && unlockTapped && !unlocked) unlock(); });
 
 $('#openMaker').addEventListener('click', () => { showPane('maker'); updateLink(); paintUnlock(); fFrom.focus({ preventScroll: true }); });
 $('#backBtn').addEventListener('click', () => showPane('msg'));
