@@ -1344,6 +1344,28 @@ let mt = 0; const schedule = () => { clearTimeout(mt); mt = setTimeout(measure, 
 addEventListener('resize', schedule);
 if (window.ResizeObserver) new ResizeObserver(schedule).observe(stage);
 
+/* ===== Quiet in the background =====
+   Another tab, another app or another window: stop the drone, suspend all sound and pause the
+   clip; pick up again when the page is back in front. */
+let away = false;
+function goQuiet() {
+  if (away) return; away = true;
+  stopDrone();
+  if (AC && AC.state === 'running') AC.suspend().catch(() => {});
+  vids.forEach(v => { if (!v.paused) { v.dataset.resume = '1'; v.pause(); } });
+}
+function comeBack() {
+  if (!away || document.hidden) return; away = false;
+  if (AC && AC.state === 'suspended') AC.resume().catch(() => {});
+  if (AC && soundOn && S.lit > 0) startDrone();
+  vids.forEach(v => { if (v.dataset.resume) { delete v.dataset.resume; v.play().catch(() => {}); } });
+}
+document.addEventListener('visibilitychange', () => { if (document.hidden) goQuiet(); else comeBack(); });
+addEventListener('pagehide', goQuiet);
+addEventListener('blur', goQuiet);
+addEventListener('focus', comeBack);
+addEventListener('pageshow', comeBack);
+
 /* ===== Start ===== */
 let last = performance.now();
 function loop(now) {
