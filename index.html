@@ -169,8 +169,8 @@ h1 .who{color:var(--gold)}
 .actions .wa{grid-column:1/-1}
 .linkbox{box-sizing:border-box;width:100%;margin-top:10px;padding:8px 10px;border-radius:8px;border:1px solid var(--line);background:#120906;color:var(--muted);font:400 .8rem var(--body)}
 .apps{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
-.app{flex:1 1 0;min-width:5.2rem;display:inline-flex;align-items:center;justify-content:center;min-height:42px;padding:0 8px;white-space:nowrap;border-radius:999px;border:1px solid var(--line);color:var(--text);text-decoration:none;font:600 .9rem var(--body);background:rgba(0,0,0,.18)}
-.app:focus-visible{outline:2px solid var(--gold-hi);outline-offset:2px}
+.pay-app{flex:1 1 0;min-width:5.2rem;display:inline-flex;align-items:center;justify-content:center;min-height:42px;padding:0 8px;white-space:nowrap;border-radius:999px;border:1px solid var(--line);color:var(--text);text-decoration:none;font:600 .9rem var(--body);background:rgba(0,0,0,.18)}
+.pay-app:focus-visible{outline:2px solid var(--gold-hi);outline-offset:2px}
 .brand{margin:22px 0 0;text-align:center;font-size:.8rem;letter-spacing:.04em;color:var(--muted)}
 .brand b{font-family:var(--display);font-weight:600;font-size:.95rem;letter-spacing:.02em;color:var(--gold)}
 #unlockBox{margin-top:16px}
@@ -185,6 +185,29 @@ h1 .who{color:var(--gold)}
   .blessing{min-height:7.4rem;padding-top:6px}
   .b-wish{font-size:.95rem}
   .hint{margin-top:6px;min-height:2.3rem}
+}
+/* Phones held sideways: window on the left, words and diyas on the right */
+@media (orientation:landscape) and (max-height:600px){
+  :root{--rangoli:24px;--dw:clamp(60px,10vh + 30px,92px)}
+  .app{max-width:980px;grid-template-columns:minmax(0,1.05fr) minmax(0,1fr);grid-template-rows:auto minmax(0,1fr) auto;
+    grid-template-areas:"stage head" "stage bless" "stage ledge";column-gap:clamp(16px,3vw,40px);padding-block:6px 0}
+  .app>header{grid-area:head}
+  .stage{grid-area:stage;margin-top:0}
+  .blessing{grid-area:bless;min-height:0;justify-content:center;padding-top:4px}
+  .ledge{grid-area:ledge}
+  h1{font-size:clamp(1.35rem,4.2vw,1.9rem)}
+  .b-name{font-size:clamp(1.2rem,3.6vw,1.6rem)}
+  .b-wish{font-size:.92rem;margin-top:2px}
+  .hint{margin-top:4px;min-height:2.2rem}
+  .shloka p{font-size:clamp(1.2rem,4vw,1.8rem)}
+}
+@media (orientation:landscape) and (max-height:400px){
+  .blessing{justify-content:safe center;gap:0}
+  .b-role{display:none}
+  .b-mantra{min-height:0;font-size:.85rem}
+  .b-wish{font-size:.86rem;line-height:1.35}
+  h1{font-size:1.3rem}
+  .from{margin-top:2px}
 }
 @media (prefers-reduced-motion:reduce){
   .pendant .sway,.diya.next::after,.diya.lit .flame-in,.diya.lit .halo,.diya.next .wickdot{animation:none}
@@ -272,9 +295,9 @@ h1 .who{color:var(--gold)}
         <div id="upiBlock">
           <div class="pay-row"><a class="btn gold block" id="unlockPay" href="#">Pay ₹3 with any UPI app</a></div>
           <div class="apps" role="group" aria-label="Or open a specific app">
-            <a class="app" id="payGpay" href="#">Google Pay</a>
-            <a class="app" id="payPhonepe" href="#">PhonePe</a>
-            <a class="app" id="payPaytm" href="#">Paytm</a>
+            <a class="pay-app" id="payGpay" href="#">Google Pay</a>
+            <a class="pay-app" id="payPhonepe" href="#">PhonePe</a>
+            <a class="pay-app" id="payPaytm" href="#">Paytm</a>
           </div>
           <p class="upi" style="margin-top:12px">UPI ID <code class="upiCode"></code> <button class="link" id="copyUpi2" type="button">Copy</button></p>
           <div class="qr-wrap" id="qrWrap2" hidden>
