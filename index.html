@@ -181,9 +181,13 @@ h1 .who{color:var(--gold)}
 .pay-help{margin:8px 0 0;font-size:.82rem;line-height:1.4;color:var(--muted)}
 .qr-box{display:flex;align-items:center;gap:14px;margin-top:14px}
 .qr-img{flex:none;width:132px;height:132px;box-sizing:border-box;padding:6px;border-radius:10px;background:#fff;image-rendering:pixelated;-webkit-touch-callout:default;-webkit-user-select:auto;user-select:auto}
+.qr-pay{display:flex;align-items:center;gap:14px;margin-top:14px}
+.qr-card{flex:none;width:148px;height:auto;border-radius:12px;background:#fff;-webkit-touch-callout:default;-webkit-user-select:auto;user-select:auto}
+.qr-card.pulse{animation:qrpulse 1.2s ease-out 2}
+.pay-steps{margin:0;padding-left:1.15rem;display:flex;flex-direction:column;gap:6px;font-size:.84rem;line-height:1.38;color:var(--muted);min-width:0}
+.pay-steps li::marker{color:var(--gold);font-weight:600}
 .qr-img.pulse{animation:qrpulse 1.2s ease-out 2}
 @keyframes qrpulse{0%{box-shadow:0 0 0 0 rgba(246,207,109,.9)}100%{box-shadow:0 0 0 16px rgba(246,207,109,0)}}
-.qr-first .qr-img{width:156px;height:156px}
 .qr-text{min-width:0;display:flex;flex-direction:column;align-items:flex-start;gap:6px}
 .qr-text p{margin:0;font-size:.84rem;line-height:1.4;color:var(--muted)}
 .apps{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-top:10px}
@@ -192,6 +196,8 @@ h1 .who{color:var(--gold)}
 .brand{margin:22px 0 0;text-align:center;font-size:.8rem;letter-spacing:.04em;color:var(--muted)}
 .brand b{font-family:var(--display);font-weight:600;font-size:.95rem;letter-spacing:.02em;color:var(--gold)}
 #shareBox{margin-top:16px}
+#qrToggle{margin-top:8px;font-size:.82rem}
+#qrPanel{margin-top:4px}
 .status{min-height:1.2em;margin:8px 0 0;font-size:.86rem;font-weight:600;color:#7fd6a8}
 .btn:focus-visible,.chip:focus-visible,.idea:focus-visible,.link:focus-visible,.field input:focus-visible,.field textarea:focus-visible,.other input:focus-visible{outline:2px solid var(--gold-hi);outline-offset:2px}
 
@@ -287,23 +293,20 @@ h1 .who{color:var(--gold)}
           <button class="chip" type="button" data-amt="other" aria-pressed="false">Other</button>
         </div>
         <label class="other" id="otherRow" hidden>₹ <input id="otherAmt" type="number" inputmode="numeric" min="1" max="10000" step="1" placeholder="Amount" aria-label="Other amount in rupees"></label>
-        <div class="pay-row"><a class="btn gold block" id="supPay" href="#">Pay ₹3 with any UPI app</a></div>
-        <p class="pay-help" id="payHelp">Opens the list of UPI apps on your phone: Google Pay, PhonePe, Paytm, Amazon Pay, BHIM, iMobile, CRED, your bank's app and more.</p>
-        <div class="apps" role="group" aria-label="Or open a specific app">
-          <a class="pay-app" id="payGpay" href="#" aria-label="Google Pay">GPay</a>
-          <a class="pay-app" id="payPhonepe" href="#">PhonePe</a>
-          <a class="pay-app" id="payPaytm" href="#">Paytm</a>
-        </div>
-        <div class="qr-box">
-          <img class="qr-img" id="qrImg" alt="UPI QR code to support the maker" width="132" height="132">
-          <div class="qr-text">
-            <p id="qrHelp">Using another app? Save this QR, then in your UPI app tap Scan and pick it from your gallery.</p>
-            <a class="link" id="saveQr" href="#" download="diyagram-upi-qr.gif">Save QR</a>
-          </div>
-        </div>
-        <p class="upi" style="margin-top:12px">UPI ID <code class="upiCode"></code> <button class="link" id="copyUpi" type="button">Copy</button></p>
-        <p class="note" id="fallback" hidden>Payment app didn't open? Use the QR above, or copy the UPI ID, open any UPI app and choose "Pay to UPI ID".</p>
+        <div class="pay-row"><a class="btn gold block" id="supPay" href="#">Pay ₹3</a></div>
         <p class="thanks" id="thanks" hidden>Thank you for the support 🙏</p>
+        <button class="link" id="qrToggle" type="button" aria-expanded="false" aria-controls="qrPanel">Payment didn't go through? Pay with QR</button>
+        <div id="qrPanel" hidden>
+          <div class="qr-pay">
+            <img class="qr-card" id="qrImg" alt="UPI QR code to support the maker" width="148" height="181">
+            <ol class="pay-steps">
+              <li id="step1">Press and hold the QR and save the image</li>
+              <li id="step2">Open any UPI app: GPay, PhonePe, Paytm, Amazon Pay, BHIM, iMobile or your bank's app</li>
+              <li id="step3">Tap Scan and pick the QR from your gallery</li>
+            </ol>
+          </div>
+          <p class="upi" style="margin-top:12px">Or pay to UPI ID <code class="upiCode"></code> <button class="link" id="copyUpi" type="button">Copy</button></p>
+        </div>
       </div>
 
       <div class="make">
@@ -1212,7 +1215,6 @@ document.addEventListener('keydown', e => { if (e.key === 'Escape' && sheet.clas
    checked on open, so an edited link falls back to the default card. */
 const isIOS = /iP(hone|ad|od)/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
 const upiQuery = (a, note) => `pa=${UPI_ID}&pn=${encodeURIComponent(MAKER)}&am=${Number(a).toFixed(2)}&cu=INR&tn=${encodeURIComponent(String(note).slice(0, 50))}`;
-const payLinks = q => ({ any: 'upi://pay?' + q, gpay: (isIOS ? 'gpay://upi/pay?' : 'tez://upi/pay?') + q, phonepe: 'phonepe://pay?' + q, paytm: 'paytmmp://pay?' + q });
 const isMobile = /Android|iPhone|iPad|iPod|Mobile|Silk|KAIOS/i.test(navigator.userAgent) || (navigator.maxTouchPoints > 1 && /Macintosh/.test(navigator.userAgent));
 const framed = (() => { try { return window.top !== window.self; } catch (e) { return true; } })();
 /* Payment apps only open from a phone, in the page itself (not inside a preview frame) */
@@ -1227,23 +1229,37 @@ const post = (url, data) => fetch(url, { method: 'POST', headers: { 'Content-Typ
 
 document.querySelectorAll('.upiCode').forEach(el => { el.textContent = UPI_ID; });
 document.querySelectorAll('.makerName').forEach(el => { el.textContent = MAKER; });
+/* One tap to pay: the button opens the phone's UPI app with the amount filled in. Some apps
+   decline link-opened payments to a personal UPI ID (a QR scan of the same details goes
+   through), so a QR stays one tap away under the button, and opens by itself when someone
+   comes back from their app. Off a phone, the QR is the way to pay. */
+const qrPanel = open => { $('#qrPanel').hidden = !open; $('#qrToggle').setAttribute('aria-expanded', String(open)); };
 if (!canOpenApps) {
-  document.querySelector('.apps').hidden = true; $('#saveQr').hidden = true;
-  $('#payHelp').textContent = isMobile
-    ? 'Payment apps can’t open from this preview. Scan the QR below, or open diyagram.vercel.app in your browser.'
-    : 'On a laptop? Scan the QR below with any UPI app on your phone.';
-  $('#qrHelp').textContent = 'Scan with GPay, PhonePe, Paytm, Amazon Pay, BHIM, iMobile, CRED or your bank’s app.';
-  $('#supportBox').classList.add('qr-first');
-} else if (isIOS) $('#payHelp').textContent = "On iPhone this opens one UPI app. For GPay, PhonePe or Paytm tap its button below. For Amazon Pay, BHIM, iMobile, CRED or your bank's app, save the QR and scan it from your gallery.";
+  qrPanel(true); $('#qrToggle').hidden = true;
+  $('#step1').textContent = isMobile ? 'Open diyagram.vercel.app in your browser to pay with one tap, or scan this QR from another phone' : 'Open any UPI app on your phone';
+  if (!isMobile) { $('#step2').textContent = 'Tap Scan'; $('#step3').textContent = 'Point your phone at this QR'; }
+} else if (isIOS) $('#step1').textContent = 'Press and hold the QR, then tap Save to Photos';
+$('#qrToggle').addEventListener('click', () => { qrPanel($('#qrPanel').hidden); if (!$('#qrPanel').hidden) setTimeout(() => $('#qrPanel').scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'nearest' }), 40); });
 
 let amount = 3, payTapped = false, qrFor = '';
+/* The QR as a picture people can keep: QR code, amount and UPI ID on white */
+function qrPicture(link, amt) {
+  const qr = qrcode(0, 'M'); qr.addData(link); qr.make();
+  const n = qr.getModuleCount(), cell = Math.floor(540 / (n + 8)), size = cell * (n + 8), W2 = size, H2 = size + 150;
+  const c = document.createElement('canvas'); c.width = W2; c.height = H2; const g = c.getContext('2d');
+  g.fillStyle = '#fff'; g.fillRect(0, 0, W2, H2); g.fillStyle = '#111';
+  for (let r = 0; r < n; r++) for (let q = 0; q < n; q++) if (qr.isDark(r, q)) g.fillRect((q + 4) * cell, (r + 4) * cell, cell, cell);
+  g.textAlign = 'center'; g.fillStyle = '#2a1306';
+  g.font = '700 40px "Hind", system-ui, sans-serif'; g.fillText(`Scan to pay ₹${amt}`, W2 / 2, size + 34);
+  g.font = '500 26px "Hind", system-ui, sans-serif'; g.fillStyle = '#5a4632'; g.fillText(UPI_ID, W2 / 2, size + 78);
+  g.font = '600 24px "Eczar", Georgia, serif'; g.fillStyle = '#b07a1c'; g.fillText('Diyagram · Support the maker', W2 / 2, size + 120);
+  return c.toDataURL('image/png');
+}
 function paintPay() {
-  const ok = amount >= 1, L2 = payLinks(upiQuery(ok ? amount : 1, 'Diyagram thank-you'));
-  const pb = $('#supPay'); pb.textContent = !ok ? 'Enter an amount' : canOpenApps ? `Pay ₹${amount} with any UPI app` : `Scan the QR to pay ₹${amount}`;
-  pb.href = ok ? L2.any : '#'; $('#payGpay').href = ok ? L2.gpay : '#'; $('#payPhonepe').href = ok ? L2.phonepe : '#'; $('#payPaytm').href = ok ? L2.paytm : '#';
-  if (ok && typeof qrcode === 'function' && qrFor !== L2.any) {
-    try { const qr = qrcode(0, 'M'); qr.addData(L2.any); qr.make(); const url = qr.createDataURL(6, 2); $('#qrImg').src = url; $('#saveQr').href = url; qrFor = L2.any; } catch (e) {}
-  }
+  const ok = amount >= 1, link = 'upi://' + 'pay?' + upiQuery(ok ? amount : 1, 'Diyagram thank-you');
+  const pb = $('#supPay'); pb.textContent = !ok ? 'Enter an amount' : canOpenApps ? `Pay ₹${amount}` : `Scan the QR to pay ₹${amount}`;
+  pb.href = ok && canOpenApps ? link : '#';
+  if (ok && typeof qrcode === 'function' && qrFor !== link) { try { $('#qrImg').src = qrPicture(link, amount); qrFor = link; } catch (e) {} }
   $('#qrImg').style.opacity = ok ? 1 : .25;
 }
 document.querySelectorAll('.chip').forEach(c => c.addEventListener('click', () => {
@@ -1253,17 +1269,17 @@ document.querySelectorAll('.chip').forEach(c => c.addEventListener('click', () =
   if (other) $('#otherAmt').focus(); paintPay();
 }));
 $('#otherAmt').addEventListener('input', e => { amount = Math.max(0, Math.min(10000, Math.floor(Number(e.target.value) || 0))); paintPay(); });
-['#supPay', '#payGpay', '#payPhonepe', '#payPaytm'].forEach(sel => $(sel).addEventListener('click', e => {
+$('#supPay').addEventListener('click', e => {
   if (amount < 1) { e.preventDefault(); return; }
-  if (!canOpenApps) {   /* no UPI apps here: point at the QR instead of opening a link the browser would block */
-    e.preventDefault(); const q = $('#qrImg');
-    q.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'center' }); q.classList.remove('pulse'); void q.offsetWidth; q.classList.add('pulse'); return;
-  }
-  payTapped = true; setTimeout(() => { if (document.visibilityState === 'visible') $('#fallback').hidden = false; }, 1600);
-}));
-$('#saveQr').addEventListener('click', () => { payTapped = true; });
+  if (!canOpenApps) { e.preventDefault(); const q = $('#qrImg'); q.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'center' }); q.classList.remove('pulse'); void q.offsetWidth; q.classList.add('pulse'); return; }
+  payTapped = true;
+});
 $('#copyUpi').addEventListener('click', () => { payTapped = true; copyText(UPI_ID, null, $('#copyUpi')); });
-document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible' && payTapped) $('#thanks').hidden = false; });
+document.addEventListener('visibilitychange', () => {
+  if (document.visibilityState !== 'visible' || !payTapped) return;
+  $('#thanks').hidden = false; $('#thanks').textContent = 'Thank you for the support 🙏 If it didn’t go through, scan the QR below.';
+  qrPanel(true);
+});
 paintPay();
 
 /* A card that arrived with custom names or a message is shown only once the server vouches for it */
