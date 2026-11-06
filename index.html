@@ -175,6 +175,9 @@ h1 .who{color:var(--gold)}
 .pay-help{margin:8px 0 0;font-size:.82rem;line-height:1.4;color:var(--muted)}
 .qr-box{display:flex;align-items:center;gap:14px;margin-top:14px}
 .qr-img{flex:none;width:132px;height:132px;box-sizing:border-box;padding:6px;border-radius:10px;background:#fff;image-rendering:pixelated;-webkit-touch-callout:default;-webkit-user-select:auto;user-select:auto}
+.qr-img.pulse{animation:qrpulse 1.2s ease-out 2}
+@keyframes qrpulse{0%{box-shadow:0 0 0 0 rgba(246,207,109,.9)}100%{box-shadow:0 0 0 16px rgba(246,207,109,0)}}
+.qr-first .qr-img{width:156px;height:156px}
 .qr-text{min-width:0;display:flex;flex-direction:column;align-items:flex-start;gap:6px}
 .qr-text p{margin:0;font-size:.84rem;line-height:1.4;color:var(--muted)}
 .apps{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-top:10px}
@@ -1185,7 +1188,10 @@ document.addEventListener('keydown', e => { if (e.key === 'Escape' && sheet.clas
 const isIOS = /iP(hone|ad|od)/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
 const upiQuery = (a, note) => `pa=${UPI_ID}&pn=${encodeURIComponent(MAKER)}&am=${a}&cu=INR&tn=${encodeURIComponent(String(note).slice(0, 50))}`;
 const payLinks = q => ({ any: 'upi://pay?' + q, gpay: (isIOS ? 'gpay://upi/pay?' : 'tez://upi/pay?') + q, phonepe: 'phonepe://pay?' + q, paytm: 'paytmmp://pay?' + q });
-const desktop = matchMedia('(pointer: fine)').matches && innerWidth >= 600;
+const isMobile = /Android|iPhone|iPad|iPod|Mobile|Silk|KAIOS/i.test(navigator.userAgent) || (navigator.maxTouchPoints > 1 && /Macintosh/.test(navigator.userAgent));
+const framed = (() => { try { return window.top !== window.self; } catch (e) { return true; } })();
+/* Payment apps only open from a phone, in the page itself (not inside a preview frame) */
+const canOpenApps = isMobile && !framed;
 function copyText(text, input, btn) {
   const done = () => { setStatus('Copied.'); if (btn) { const t = btn.textContent; btn.textContent = 'Copied'; setTimeout(() => { btn.textContent = t; }, 1500); } };
   const fail = () => { if (input) { input.focus(); input.select(); setStatus('Press and hold the link to copy it.'); } };
@@ -1196,13 +1202,19 @@ const post = (url, data) => fetch(url, { method: 'POST', headers: { 'Content-Typ
 
 document.querySelectorAll('.upiCode').forEach(el => { el.textContent = UPI_ID; });
 document.querySelectorAll('.makerName').forEach(el => { el.textContent = MAKER; });
-if (isIOS) $('#payHelp').textContent = "On iPhone this opens one UPI app. For GPay, PhonePe or Paytm tap its button below. For Amazon Pay, BHIM, iMobile, CRED or your bank's app, save the QR and scan it from your gallery.";
-else if (desktop) { $('#payHelp').textContent = 'On a laptop? Scan the QR below with any UPI app on your phone.'; $('#qrHelp').textContent = 'Scan with GPay, PhonePe, Paytm, Amazon Pay, BHIM, iMobile, CRED or any UPI app.'; }
+if (!canOpenApps) {
+  document.querySelector('.apps').hidden = true; $('#saveQr').hidden = true;
+  $('#payHelp').textContent = isMobile
+    ? 'Payment apps can’t open from this preview. Scan the QR below, or open diyagram.vercel.app in your browser.'
+    : 'On a laptop? Scan the QR below with any UPI app on your phone.';
+  $('#qrHelp').textContent = 'Scan with GPay, PhonePe, Paytm, Amazon Pay, BHIM, iMobile, CRED or your bank’s app.';
+  $('#supportBox').classList.add('qr-first');
+} else if (isIOS) $('#payHelp').textContent = "On iPhone this opens one UPI app. For GPay, PhonePe or Paytm tap its button below. For Amazon Pay, BHIM, iMobile, CRED or your bank's app, save the QR and scan it from your gallery.";
 
 let amount = 3, payTapped = false, qrFor = '';
 function paintPay() {
   const ok = amount >= 1, L2 = payLinks(upiQuery(ok ? amount : 1, 'Diyagram thank-you'));
-  const pb = $('#supPay'); pb.textContent = ok ? `Pay ₹${amount} with any UPI app` : 'Enter an amount';
+  const pb = $('#supPay'); pb.textContent = !ok ? 'Enter an amount' : canOpenApps ? `Pay ₹${amount} with any UPI app` : `Scan the QR to pay ₹${amount}`;
   pb.href = ok ? L2.any : '#'; $('#payGpay').href = ok ? L2.gpay : '#'; $('#payPhonepe').href = ok ? L2.phonepe : '#'; $('#payPaytm').href = ok ? L2.paytm : '#';
   if (ok && typeof qrcode === 'function' && qrFor !== L2.any) {
     try { const qr = qrcode(0, 'M'); qr.addData(L2.any); qr.make(); const url = qr.createDataURL(6, 2); $('#qrImg').src = url; $('#saveQr').href = url; qrFor = L2.any; } catch (e) {}
@@ -1218,6 +1230,10 @@ document.querySelectorAll('.chip').forEach(c => c.addEventListener('click', () =
 $('#otherAmt').addEventListener('input', e => { amount = Math.max(0, Math.min(10000, Math.floor(Number(e.target.value) || 0))); paintPay(); });
 ['#supPay', '#payGpay', '#payPhonepe', '#payPaytm'].forEach(sel => $(sel).addEventListener('click', e => {
   if (amount < 1) { e.preventDefault(); return; }
+  if (!canOpenApps) {   /* no UPI apps here: point at the QR instead of opening a link the browser would block */
+    e.preventDefault(); const q = $('#qrImg');
+    q.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'center' }); q.classList.remove('pulse'); void q.offsetWidth; q.classList.add('pulse'); return;
+  }
   payTapped = true; setTimeout(() => { if (document.visibilityState === 'visible') $('#fallback').hidden = false; }, 1600);
 }));
 $('#saveQr').addEventListener('click', () => { payTapped = true; });
