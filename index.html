@@ -1108,7 +1108,7 @@ function tapDiya(i) {
   if (i > S.lit) { const n = diyas[S.lit]; n.classList.remove('nudge'); void n.offsetWidth; n.classList.add('nudge'); return; }
   S.lit++; paintDiyas(); sparks(i); sIgnite(); buzz(18); wake();
   showDeity(i, true);
-  if (S.lit === 3) { setHint(''); clearTimeout(S.finT); S.finT = setTimeout(finale, reduce ? 1200 : 6000); }
+  if (S.lit === 3) { setHint('Tap anywhere to see all three'); clearTimeout(S.finT); S.finT = setTimeout(finale, reduce ? 1200 : 6000); }
   else setHint(S.lit === 1 ? 'Now light the second diya' : 'Light the last diya');
 }
 function showDeity(k, fresh) {
@@ -1127,8 +1127,10 @@ function finale() {
   clearTimeout(S.sheetT); S.sheetT = setTimeout(openSheet, reduce ? 1400 : 2500);
 }
 function toTrio() { S.mode = 'trio'; S.show = -1; S.vOn = false; clearTimeout(S.fbT); pauseVids(); placePendants(); pend.forEach(el => el.classList.remove('reveal')); trioText(); trioHint(); }
-stage.addEventListener('pointerdown', e => {
+document.addEventListener('pointerdown', e => {
+  if (e.target.closest('button, a, input, textarea, label, .sheet')) return;
   if (!S.done) { if (S.lit === 3 && S.mode === 'deity') { clearTimeout(S.finT); finale(); } return; }
+  if (sheet.classList.contains('show')) return;
   if (S.mode !== 'trio') { toTrio(); return; }
   const x = e.clientX, y = e.clientY;
   if (x < L.x0 || x > L.x1 || y > L.yb || y < archYAt(x)) return;
