@@ -316,9 +316,9 @@ const DEITIES = [
 /* Animated darshan for each deity (clip's last second dissolves back into the frame at loopAt).
    box = [centre x, centre y, width, height] of the part that must stay in view, as fractions of the clip */
 const VIDS = [
-  { src: 'ganesha-v3.mp4', loopAt: 1.5, fy: .55, img: 'ganesha.jpg' },
-  { src: 'saraswati-v3.mp4', loopAt: 1.5, box: [.54, .615, .9, .68], img: 'saraswati-v2.jpg' },
-  { src: 'lakshmi-v3.mp4', loopAt: 1.5, box: [.54, .49, .84, .46], img: 'lakshmi-v2.jpg' }
+  { src: '/ganesha-v3.mp4', loopAt: 1.5, fy: .55, img: '/ganesha.jpg' },
+  { src: '/saraswati-v3.mp4', loopAt: 1.5, box: [.54, .615, .9, .68], img: '/saraswati-v2.jpg' },
+  { src: '/lakshmi-v3.mp4', loopAt: 1.5, box: [.54, .49, .84, .46], img: '/lakshmi-v2.jpg' }
 ];
 const ART = [];
 const NUMS = ['१', '२', '३'];
@@ -953,6 +953,9 @@ paintSound();
 const RESERVED = /^(settings|sidebar|customize|upgrade|downloads|comment-.*)$/i;
 function readCard(plain) {
   if (plain) return { to: '', from: MAKER, msg: DEFAULT_MSG };
+  /* A short link (/c/<code>): the server has already built the saved card into the page */
+  const sc = window.__CARD;
+  if (sc && typeof sc === 'object') return { to: String(sc.to || '').slice(0, 30), from: String(sc.from || '').slice(0, 30) || MAKER, msg: String(sc.msg || '').slice(0, 150) || DEFAULT_MSG, custom: false };
   let q = new URLSearchParams(location.search);
   if (!q.get('to') && !q.get('from') && !q.get('msg') && location.hash.includes('=')) q = new URLSearchParams(location.hash.slice(1));
   const rawTo = (q.get('to') || '').trim().slice(0, 30), from = (q.get('from') || '').trim().slice(0, 30), msg = (q.get('msg') || '').trim().slice(0, 150);
@@ -1180,30 +1183,32 @@ function checkCard() {
 
 /* ===== Make your own (free) ===== */
 const fFrom = $('#fFrom'), fTo = $('#fTo'), fMsg = $('#fMsg');
-let linkSig = '', busy = false;
+let linkSig = '', linkShort = '', busy = false;
 const fields = () => ({ to: fTo.value.trim().slice(0, 30), from: fFrom.value.trim().slice(0, 30), msg: fMsg.value.trim().slice(0, 150) });
 function buildLink() {
   const f = fields(), p = new URLSearchParams();
+  const base = location.href.split(/[?#]/)[0].replace(/\/c\/[^/]*$/, '/');
+  if (linkShort) return new URL(linkShort, base).href;   /* short link: diyagram.vercel.app/c/k7Qp2xA */
   if (f.to) p.set('to', f.to); if (f.from) p.set('from', f.from); if (f.msg) p.set('msg', f.msg); if (linkSig) p.set('s', linkSig);
-  const base = location.href.split(/[?#]/)[0], qs = p.toString(); return qs ? base + '?' + qs : base;
+  const qs = p.toString(); return qs ? base + '?' + qs : base;
 }
 function updateLink() {
   $('#count').textContent = `${fMsg.value.length} / 150`;
   const link = buildLink(), from = fFrom.value.trim() || 'Someone';
   $('#linkBox').value = link;
-  $('#waBtn').href = 'https://wa.me/?text=' + encodeURIComponent(`🪔 ${from} sent you a Diyagram. Light three diyas to receive three blessings: ${link}`);
+  $('#waBtn').href = 'https://wa.me/?text=' + encodeURIComponent(`🪔 ${from} sent you a Diyagram.\nLight three diyas to receive three blessings:\n${link}`);
 }
 function showShare(on) { $('#shareBox').hidden = !on; $('#lockedActions').hidden = on; }
 /* Ask the server to sign this card; without a server (or a secret) the plain link is used */
 async function revealLink() {
-  if (busy) return; busy = true; setStatus('Making your link…'); linkSig = '';
-  try { const r = await post('/api/sign', fields()); if (r.ok) linkSig = (await r.json()).s || ''; } catch (e) {}
+  if (busy) return; busy = true; setStatus('Making your link…'); linkSig = ''; linkShort = '';
+  try { const r = await post('/api/sign', fields()); if (r.ok) { const j = await r.json(); linkSig = j.s || ''; linkShort = j.url || ''; } } catch (e) {}
   busy = false; setStatus(''); updateLink(); showShare(true);
   setTimeout(() => $('#shareBox').scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'center' }), 60);
 }
 $('#getLink').addEventListener('click', revealLink);
 /* Editing the card after the link is made: the old link no longer matches, so make a new one */
-[fFrom, fTo, fMsg].forEach(el => el.addEventListener('input', () => { if (!$('#shareBox').hidden) { showShare(false); linkSig = ''; setStatus(''); } updateLink(); }));
+[fFrom, fTo, fMsg].forEach(el => el.addEventListener('input', () => { if (!$('#shareBox').hidden) { showShare(false); linkSig = ''; linkShort = ''; setStatus(''); } updateLink(); }));
 document.querySelectorAll('.idea').forEach(b => b.addEventListener('click', () => { fMsg.value = b.textContent; fMsg.dispatchEvent(new Event('input')); }));
 
 $('#openMaker').addEventListener('click', () => { showPane('maker'); updateLink(); fFrom.focus({ preventScroll: true }); });

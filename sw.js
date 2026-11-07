@@ -2,7 +2,7 @@
 // - Pages: network first, so updates show at once; the saved copy is used only when offline.
 // - Pictures and icons: served from the saved copy, refreshed in the background.
 // - Videos and /api are left to the browser (video uses range requests, which this cache can't hold).
-const CACHE = 'diyagram-v1';
+const CACHE = 'diyagram-v2';
 const CORE = ['/', '/manifest.webmanifest', '/favicon.svg', '/icon-192.png', '/icon-512.png', '/ganesha.jpg', '/saraswati-v2.jpg', '/lakshmi-v2.jpg'];
 
 self.addEventListener('install', e => {
@@ -16,8 +16,9 @@ self.addEventListener('fetch', e => {
   if (req.method !== 'GET' || url.origin !== location.origin) return;
   if (url.pathname.startsWith('/api/') || url.pathname.endsWith('.mp4')) return;
   if (req.mode === 'navigate') {
+    // only the plain home page is kept for offline use; card pages (/c/<code>, ?to=…) are always fetched fresh
     e.respondWith(fetch(req).then(res => {
-      if (res.ok) { const copy = res.clone(); caches.open(CACHE).then(c => c.put('/', copy)); }
+      if (res.ok && url.pathname === '/' && !url.search) { const copy = res.clone(); caches.open(CACHE).then(c => c.put('/', copy)); }
       return res;
     }).catch(() => caches.match('/')));
     return;

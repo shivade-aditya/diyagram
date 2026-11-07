@@ -35,5 +35,16 @@
         }
       ]
     }
-  ]
+  ],
+  "rewrites": [
+    {
+      "source": "/c/:id",
+      "destination": "/api/card?id=:id"
+    }
+  ],
+  "functions": {
+    "api/card.js": {
+      "includeFiles": "index.html"
+    }
+  }
 }
