@@ -97,6 +97,7 @@ h1 .who{color:var(--gold)}
 .blessing.fade{opacity:0}
 .b-mantra{margin:0;min-height:1.45em;font-family:var(--sanskrit);font-size:.98rem;color:var(--gold)}
 .b-name{margin:0;font-family:var(--display);font-weight:600;font-size:clamp(1.5rem,6.6vw,2rem);line-height:1.15;text-wrap:balance}
+.b-by{margin:2px 0 4px;font-family:var(--display);font-weight:600;font-size:1rem;letter-spacing:.03em;color:var(--gold)}
 .b-role{margin:0;min-height:1.2em;font-size:.72rem;font-weight:600;letter-spacing:.16em;text-transform:uppercase;color:var(--muted)}
 .b-wish{margin:6px 0 0;max-width:22rem;font-size:1.04rem;line-height:1.45;text-wrap:balance}
 
@@ -233,6 +234,7 @@ h1 .who{color:var(--gold)}
   <div class="blessing" id="blessing" aria-live="polite">
     <p class="b-mantra" id="bMantra" lang="sa"></p>
     <h2 class="b-name" id="bName">Three diyas, three blessings</h2>
+    <p class="b-by" id="bBy" hidden></p>
     <p class="b-role" id="bRole"></p>
     <p class="b-wish" id="bWish">Every diya carries a prayer I made for you. Light them.</p>
   </div>
@@ -1089,8 +1091,8 @@ function paintDiyas() {
     b.setAttribute('aria-label', lit ? `See ${DEITIES[i].en}'s blessing again` : i === S.lit ? `Light the ${ORD[i]} diya` : `Diya ${i + 1}. Light the ${ORD[S.lit]} diya first`);
   });
 }
-function setBlessing(m, n, r, w, now) {
-  const b = $('#blessing'), apply = () => { $('#bMantra').textContent = m; const nm = $('#bName'); nm.textContent = n; nm.lang = /[ऀ-ॿ]/.test(n) ? 'hi' : 'en'; $('#bRole').textContent = r; $('#bWish').textContent = w; b.classList.remove('fade'); };
+function setBlessing(m, n, r, w, now, by = '') {
+  const b = $('#blessing'), apply = () => { $('#bMantra').textContent = m; const nm = $('#bName'); nm.textContent = n; nm.lang = /[ऀ-ॿ]/.test(n) ? 'hi' : 'en'; $('#bRole').textContent = r; const bw = $('#bWish'); bw.textContent = w; bw.hidden = !w; const bb = $('#bBy'); bb.textContent = by; bb.hidden = !by; b.classList.remove('fade'); };
   clearTimeout(setBlessing.t);
   if (now || reduce) return apply();
   b.classList.add('fade'); setBlessing.t = setTimeout(apply, 260);
@@ -1101,7 +1103,7 @@ function setHint(text, buttons = []) {
   for (const [label, fn] of buttons) { const b = document.createElement('button'); b.type = 'button'; b.className = 'pill'; b.textContent = label; b.addEventListener('click', fn); h.appendChild(b); }
 }
 const introText = now => setBlessing('', 'Three diyas, three blessings', '', 'Every diya carries a prayer I made for you. Light them.', now);
-const trioText = () => setBlessing('शुभ दीपावली', 'All three blessings are yours', 'Tap the window for fireworks', '“Be the light of your life.” — Sadhguru');
+const trioText = () => setBlessing('शुभ दीपावली', '“Be the light of your life.”', 'Tap the window for fireworks', '', false, '— Sadhguru');
 const trioHint = () => setHint('', [['Read the message', openSheet]]);
 
 function wake() { if (audio() && S.lit > 0 && soundOn) startDrone(); }
