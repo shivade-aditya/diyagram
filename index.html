@@ -167,9 +167,6 @@ h1 .who{color:var(--gold)}
 .actions{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:16px}
 .actions .wa{grid-column:1/-1}
 .linkbox{box-sizing:border-box;width:100%;margin-top:10px;padding:8px 10px;border-radius:8px;border:1px solid var(--line);background:#120906;color:var(--muted);font:400 .8rem var(--body)}
-.install{margin-top:14px}
-.install-help{margin:10px 0 0;font-size:.86rem;line-height:1.45;color:var(--muted)}
-.install-help b{color:var(--text);font-weight:600}
 .brand{margin:22px 0 0;text-align:center;font-size:.8rem;letter-spacing:.04em;color:var(--muted)}
 .brand b{font-family:var(--display);font-weight:600;font-size:.95rem;letter-spacing:.02em;color:var(--gold)}
 #shareBox{margin-top:16px}
@@ -262,10 +259,6 @@ h1 .who{color:var(--gold)}
         <h3>Send these blessings to someone</h3>
         <p>Make your own card in 30 seconds. Free.</p>
         <button class="btn gold block" id="openMaker" type="button">Make your own card</button>
-      </div>
-      <div class="install" id="installBox" hidden>
-        <button class="btn block" id="installBtn" type="button"><svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path fill="currentColor" d="M12 3a1 1 0 0 1 1 1v8.6l2.3-2.3a1 1 0 1 1 1.4 1.4l-4 4a1 1 0 0 1-1.4 0l-4-4a1 1 0 1 1 1.4-1.4L11 12.6V4a1 1 0 0 1 1-1zM5 19a1 1 0 0 1 1-1h12a1 1 0 1 1 0 2H6a1 1 0 0 1-1-1z"/></svg>Add Diyagram to your home screen</button>
-        <p class="install-help" id="installHelp" hidden>On iPhone, tap the <b>Share</b> button <span aria-hidden="true">(□↑)</span> in Safari, then <b>Add to Home Screen</b>. Diyagram then opens like an app, without the browser.</p>
       </div>
       <p class="brand"><b>Diyagram</b> · Send a little light</p>
     </section>
@@ -1249,23 +1242,11 @@ let mt = 0; const schedule = () => { clearTimeout(mt); mt = setTimeout(measure, 
 addEventListener('resize', schedule);
 if (window.ResizeObserver) new ResizeObserver(schedule).observe(stage);
 
-/* ===== Install as an app =====
-   Android (Chrome, Edge, Samsung Internet) offers its own install prompt, which the button
-   opens; on iPhone the button explains Share → Add to Home Screen. Hidden once installed. */
-const installed = () => matchMedia('(display-mode: standalone)').matches || navigator.standalone === true;
-const iosBrowser = /iP(hone|ad|od)/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+/* ===== Offline copy =====
+   The service worker keeps the page and pictures for quick reopening. No install button, and the
+   browser's own "add to home screen" banner is suppressed. */
 const inFrame = (() => { try { return window.top !== window.self; } catch (e) { return true; } })();
-let installPrompt = null;
-if (!installed() && !inFrame && iosBrowser) $('#installBox').hidden = false;
-addEventListener('beforeinstallprompt', e => { e.preventDefault(); installPrompt = e; if (!installed()) $('#installBox').hidden = false; });
-$('#installBtn').addEventListener('click', async () => {
-  if (installPrompt) {
-    installPrompt.prompt();
-    try { const c = await installPrompt.userChoice; if (c && c.outcome === 'accepted') $('#installBox').hidden = true; } catch (e) {}
-    installPrompt = null;
-  } else $('#installHelp').hidden = !$('#installHelp').hidden;
-});
-addEventListener('appinstalled', () => { $('#installBox').hidden = true; });
+addEventListener('beforeinstallprompt', e => e.preventDefault());
 if ('serviceWorker' in navigator && !inFrame && (location.protocol === 'https:' || location.hostname === 'localhost')) {
   addEventListener('load', () => { try { navigator.serviceWorker.register('/sw.js').catch(() => {}); } catch (e) {} });
 }
