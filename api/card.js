@@ -17,8 +17,9 @@ module.exports = async (req, res) => {
   let card = null;
   try { const raw = await redis(['GET', 'card:' + id]); card = raw ? JSON.parse(raw) : null; } catch (e) { return send(res, 503, { error: 'Try again in a moment' }); }
   if (!card) return home();
-  const to = card.to, from = card.from || 'Someone';
-  const title = to ? `${to}, you've received a Diyagram from ${from} 🪔` : `${from} sent you a Diyagram 🪔`;
+  /* No sender name → no "from" at all */
+  const to = card.to, from = card.from;
+  const title = `${to ? `${to}, you've` : "You've"} received a Diyagram${from ? ` from ${from}` : ''} 🪔`;
   const url = `https://${req.headers.host}/c/${id}`;
   let html = await page(req);
   html = html

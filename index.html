@@ -949,24 +949,25 @@ function readCard(plain) {
   if (plain) return { to: '', from: MAKER, msg: DEFAULT_MSG };
   /* A short link (/c/<code>): the server has already built the saved card into the page */
   const sc = window.__CARD;
-  if (sc && typeof sc === 'object') return { to: String(sc.to || '').slice(0, 30), from: String(sc.from || '').slice(0, 30) || MAKER, msg: String(sc.msg || '').slice(0, 200) || DEFAULT_MSG, custom: false };
+  if (sc && typeof sc === 'object') return { to: String(sc.to || '').slice(0, 30), from: String(sc.from || '').trim().slice(0, 30), msg: String(sc.msg || '').slice(0, 200) || DEFAULT_MSG, custom: false };
   let q = new URLSearchParams(location.search);
   if (!q.get('to') && !q.get('from') && !q.get('msg') && location.hash.includes('=')) q = new URLSearchParams(location.hash.slice(1));
   const rawTo = (q.get('to') || '').trim().slice(0, 30), from = (q.get('from') || '').trim().slice(0, 30), msg = (q.get('msg') || '').trim().slice(0, 200);
   let to = rawTo;
   const h = location.hash.slice(1);
   if (!to && /^[A-Za-z0-9-]{1,40}$/.test(h) && !RESERVED.test(h)) to = h.split('-').filter(Boolean).map(w => w[0].toUpperCase() + w.slice(1).toLowerCase()).join(' ');
-  return { to, from: from || MAKER, msg: msg || DEFAULT_MSG, custom: !!(rawTo || from || msg), toRaw: rawTo, fromRaw: from, msgRaw: msg, s: (q.get('s') || '').slice(0, 64) };
+  /* A card someone made without their name shows no sender; only the plain page (and its #name links) is from Aditya */
+  return { to, from: from || (rawTo || msg ? '' : MAKER), msg: msg || DEFAULT_MSG, custom: !!(rawTo || from || msg), toRaw: rawTo, fromRaw: from, msgRaw: msg, s: (q.get('s') || '').slice(0, 64) };
 }
 const rawCard = readCard();
 let card = rawCard.custom ? { to: '', from: '', msg: DEFAULT_MSG, pending: true } : rawCard;
 function paintCard() {
   $('#hello').textContent = card.to ? 'Happy Diwali, ' : 'Happy Diwali';
   const who = $('#who'); who.textContent = card.to; who.hidden = !card.to;
-  $('#fromLine').textContent = card.pending ? '\u00a0' : 'with love from ' + card.from;
+  $('#fromLine').textContent = card.pending || !card.from ? '\u00a0' : 'with love from ' + card.from;
   $('#msgFor').textContent = card.to ? 'A message for ' + card.to : 'A message for you';
   $('#msgText').textContent = card.msg;
-  $('#msgSign').textContent = '— ' + card.from;
+  const sign = $('#msgSign'); sign.textContent = card.from ? '— ' + card.from : ''; sign.hidden = !card.from;
 }
 
 /* ===== Diyas ===== */
@@ -1210,7 +1211,7 @@ $('#openMaker').addEventListener('click', () => { showPane('maker'); updateLink(
 $('#backBtn').addEventListener('click', () => showPane('msg'));
 $('#copyLink').addEventListener('click', () => copyText($('#linkBox').value, $('#linkBox'), $('#copyLink')));
 function previewCard() {
-  const f = fields(); card = { to: f.to, from: f.from || MAKER, msg: f.msg || DEFAULT_MSG };
+  const f = fields(); card = { to: f.to, from: f.from, msg: f.msg || DEFAULT_MSG };
   paintCard(); resetExperience(); setStatus(''); requestAnimationFrame(measure);
 }
 $('#previewBtn').addEventListener('click', previewCard);
