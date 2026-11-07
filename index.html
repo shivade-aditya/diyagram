@@ -143,34 +143,17 @@ h1 .who{color:var(--gold)}
 .s-title{margin:2px 0 0;font-family:var(--display);font-weight:600;font-size:1.7rem;line-height:1.15}
 .s-msg{margin:10px 0 0;font-size:1.12rem;line-height:1.6;white-space:pre-line;overflow-wrap:anywhere}
 .s-sign{margin:8px 0 0;text-align:right;font-family:var(--display);font-size:1.1rem;color:var(--gold)}
-.support{margin-top:20px;padding:16px;border-radius:16px;background:rgba(232,179,79,.07);border:1px solid var(--line)}
-.support h3{margin:0;font-size:1.02rem;font-weight:600}
-.support p{margin:3px 0 0;font-size:.88rem;line-height:1.45;color:var(--muted)}
-.chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
-.chip{min-height:40px;padding:0 16px;border-radius:999px;cursor:pointer;border:1px solid var(--line);background:transparent;color:var(--text);font:600 .95rem var(--body);font-variant-numeric:tabular-nums}
-.chip[aria-pressed="true"]{background:var(--gold);border-color:var(--gold);color:#2a1306}
-.other{display:flex;align-items:center;gap:6px;margin-top:10px;font-weight:600}
-.other input{width:7.5rem}
-.pay-row{display:flex;flex-wrap:wrap;align-items:center;gap:10px 14px;margin-top:14px}
 .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:46px;padding:0 20px;border-radius:999px;cursor:pointer;text-decoration:none;
   font:600 1rem/1 var(--body);border:1px solid var(--line);background:transparent;color:var(--text)}
 .btn.gold{background:linear-gradient(180deg,#f6cf6d,#d99a2f);border-color:transparent;color:#2a1306}
 .btn.wa{background:#1f7a4d;border-color:#1f7a4d;color:#fff}
 .btn.block{width:100%}
-.upi{display:flex;flex-wrap:wrap;align-items:center;gap:6px;font-size:.88rem;color:var(--muted)}
-.upi code{font:600 .9rem var(--body);color:var(--text);background:rgba(0,0,0,.3);padding:3px 8px;border-radius:6px;overflow-wrap:anywhere}
-.qr-wrap{display:flex;align-items:center;gap:12px;margin-top:12px}
-.qr{width:112px;height:112px;flex:none;box-sizing:border-box;padding:6px;border-radius:8px;background:#fff}
-.qr svg{display:block;width:100%;height:100%}
-.note{margin:10px 0 0;font-size:.86rem;line-height:1.45;color:var(--gold)}
-.thanks{margin:10px 0 0;font-weight:600;color:#7fd6a8}
 .make{margin-top:22px;padding-top:18px;border-top:1px solid var(--line)}
 .make h3{margin:0;font-size:1.05rem;font-weight:600}
 .make p{margin:3px 0 12px;font-size:.9rem;color:var(--muted)}
 .field{display:flex;flex-direction:column;gap:5px;margin-top:12px}
 .field label{font-size:.8rem;font-weight:600;color:var(--muted)}
-.field input,.field textarea,.other input{box-sizing:border-box;width:100%;padding:11px 12px;border-radius:12px;border:1px solid var(--line);background:#120906;color:var(--text);font:400 1rem/1.4 var(--body)}
-.other input{width:7.5rem}
+.field input,.field textarea{box-sizing:border-box;width:100%;padding:11px 12px;border-radius:12px;border:1px solid var(--line);background:#120906;color:var(--text);font:400 1rem/1.4 var(--body)}
 .field textarea{min-height:5.4em;resize:vertical}
 .count{align-self:flex-end;font-size:.76rem;color:var(--muted);font-variant-numeric:tabular-nums}
 .ideas{display:flex;flex-wrap:wrap;gap:6px}
@@ -178,28 +161,11 @@ h1 .who{color:var(--gold)}
 .actions{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:16px}
 .actions .wa{grid-column:1/-1}
 .linkbox{box-sizing:border-box;width:100%;margin-top:10px;padding:8px 10px;border-radius:8px;border:1px solid var(--line);background:#120906;color:var(--muted);font:400 .8rem var(--body)}
-.pay-help{margin:8px 0 0;font-size:.82rem;line-height:1.4;color:var(--muted)}
-.qr-box{display:flex;align-items:center;gap:14px;margin-top:14px}
-.qr-img{flex:none;width:132px;height:132px;box-sizing:border-box;padding:6px;border-radius:10px;background:#fff;image-rendering:pixelated;-webkit-touch-callout:default;-webkit-user-select:auto;user-select:auto}
-.qr-pay{display:flex;align-items:center;gap:14px;margin-top:14px}
-.qr-card{flex:none;width:148px;height:auto;border-radius:12px;background:#fff;-webkit-touch-callout:default;-webkit-user-select:auto;user-select:auto}
-.qr-card.pulse{animation:qrpulse 1.2s ease-out 2}
-.pay-steps{margin:0;padding-left:1.15rem;display:flex;flex-direction:column;gap:6px;font-size:.84rem;line-height:1.38;color:var(--muted);min-width:0}
-.pay-steps li::marker{color:var(--gold);font-weight:600}
-.qr-img.pulse{animation:qrpulse 1.2s ease-out 2}
-@keyframes qrpulse{0%{box-shadow:0 0 0 0 rgba(246,207,109,.9)}100%{box-shadow:0 0 0 16px rgba(246,207,109,0)}}
-.qr-text{min-width:0;display:flex;flex-direction:column;align-items:flex-start;gap:6px}
-.qr-text p{margin:0;font-size:.84rem;line-height:1.4;color:var(--muted)}
-.apps{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-top:10px}
-.pay-app{min-width:0;display:flex;align-items:center;justify-content:center;min-height:42px;padding:0 4px;border-radius:999px;border:1px solid var(--line);color:var(--text);text-decoration:none;font:600 clamp(.72rem,3.3vw,.9rem)/1 var(--body);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;background:rgba(0,0,0,.18)}
-.pay-app:focus-visible{outline:2px solid var(--gold-hi);outline-offset:2px}
 .brand{margin:22px 0 0;text-align:center;font-size:.8rem;letter-spacing:.04em;color:var(--muted)}
 .brand b{font-family:var(--display);font-weight:600;font-size:.95rem;letter-spacing:.02em;color:var(--gold)}
 #shareBox{margin-top:16px}
-#qrToggle{margin-top:8px;font-size:.82rem}
-#qrPanel{margin-top:4px}
 .status{min-height:1.2em;margin:8px 0 0;font-size:.86rem;font-weight:600;color:#7fd6a8}
-.btn:focus-visible,.chip:focus-visible,.idea:focus-visible,.link:focus-visible,.field input:focus-visible,.field textarea:focus-visible,.other input:focus-visible{outline:2px solid var(--gold-hi);outline-offset:2px}
+.btn:focus-visible,.idea:focus-visible,.link:focus-visible,.field input:focus-visible,.field textarea:focus-visible{outline:2px solid var(--gold-hi);outline-offset:2px}
 
 @media (max-height:720px){
   :root{--rangoli:38px;--dw:clamp(66px,20vw,88px)}
@@ -283,32 +249,6 @@ h1 .who{color:var(--gold)}
       <p class="s-msg" id="msgText"></p>
       <p class="s-sign" id="msgSign"></p>
 
-      <div class="support" id="supportBox">
-        <h3>Liked it? Support the maker</h3>
-        <p>Diyagram is made by <span class="makerName">Aditya</span>. A small thank-you keeps it free for everyone.</p>
-        <div class="chips" role="group" aria-label="Amount">
-          <button class="chip" type="button" data-amt="3" aria-pressed="true">₹3</button>
-          <button class="chip" type="button" data-amt="11" aria-pressed="false">₹11</button>
-          <button class="chip" type="button" data-amt="21" aria-pressed="false">₹21</button>
-          <button class="chip" type="button" data-amt="other" aria-pressed="false">Other</button>
-        </div>
-        <label class="other" id="otherRow" hidden>₹ <input id="otherAmt" type="number" inputmode="numeric" min="1" max="10000" step="1" placeholder="Amount" aria-label="Other amount in rupees"></label>
-        <div class="pay-row"><a class="btn gold block" id="supPay" href="#">Pay ₹3</a></div>
-        <p class="thanks" id="thanks" hidden>Thank you for the support 🙏</p>
-        <button class="link" id="qrToggle" type="button" aria-expanded="false" aria-controls="qrPanel">Payment didn't go through? Pay with QR</button>
-        <div id="qrPanel" hidden>
-          <div class="qr-pay">
-            <img class="qr-card" id="qrImg" alt="UPI QR code to support the maker" width="148" height="181">
-            <ol class="pay-steps">
-              <li id="step1">Press and hold the QR and save the image</li>
-              <li id="step2">Open any UPI app: GPay, PhonePe, Paytm, Amazon Pay, BHIM, iMobile or your bank's app</li>
-              <li id="step3">Tap Scan and pick the QR from your gallery</li>
-            </ol>
-          </div>
-          <p class="upi" style="margin-top:12px">Or pay to UPI ID <code class="upiCode"></code> <button class="link" id="copyUpi" type="button">Copy</button></p>
-        </div>
-      </div>
-
       <div class="make">
         <h3>Send these blessings to someone</h3>
         <p>Make your own card in 30 seconds. Free.</p>
@@ -354,7 +294,6 @@ h1 .who{color:var(--gold)}
 (() => {
 'use strict';
 const MAKER = 'Aditya';
-const UPI_ID = 'aditya.shivade3004@axl';
 const DEFAULT_MSG = 'This Diwali, may all of us have the Courage, Commitment, and the Consciousness to make better Humans of ourselves, and, in turn, a better world. Much Love to you and your family.';
 const DEITIES = [
   { key: 'ganesha', dev: 'श्री गणेश', en: 'Shri Ganesha', role: 'Remover of obstacles', mantra: 'ॐ गं गणपतये नमः', wish: 'May every new beginning this year be free of obstacles.', label: 'Ganesha', band: '#d8452a', enamel: ['#e1542f', '#7a130b'], deep: '#8f1d12' },
@@ -1083,7 +1022,7 @@ function playVid(k) {
 function pauseVids() { vids.forEach(v => { if (!v.paused) v.pause(); }); }
 /* Nothing heavy loads before the page is showing. Then the clips download one at a time,
    Ganesha first (a tapped diya always starts its own clip at once), followed by the
-   pendant stills and the QR library. */
+   pendant stills. */
 let warmed = 0;
 function warmNext() {
   if (warmed >= vids.length) return;
@@ -1100,14 +1039,8 @@ function loadArt() {
     im.src = cfg.img;
   });
 }
-const QR_SRC = '/qrcode.js';
-let qrLoad = null;
-function loadQR() {
-  if (typeof qrcode === 'function') return Promise.resolve();
-  return qrLoad || (qrLoad = new Promise((ok, no) => { const s = document.createElement('script'); s.src = QR_SRC; s.onload = ok; s.onerror = () => { qrLoad = null; no(); }; document.head.appendChild(s); }));
-}
 let warmStarted = false;
-function warmUp() { if (warmStarted) return; warmStarted = true; warmNext(); setTimeout(loadArt, 1500); setTimeout(() => loadQR().then(() => paintPay()).catch(() => {}), 2500); }
+function warmUp() { if (warmStarted) return; warmStarted = true; warmNext(); setTimeout(loadArt, 1500); }
 if (document.readyState === 'complete') setTimeout(warmUp, 200); else addEventListener('load', () => setTimeout(warmUp, 200), { once: true });
 setTimeout(warmUp, 3000);
 
@@ -1203,22 +1136,15 @@ function resetExperience() {
 /* ===== Sheet ===== */
 const sheet = $('#sheet');
 function showPane(p) { $('#msgPane').hidden = p !== 'msg'; $('#makerPane').hidden = p !== 'maker'; sheet.querySelector('.sheet-body').scrollTop = 0; }
-function openSheet() { loadQR().then(() => paintPay()).catch(() => {}); clearTimeout(S.sheetT); showPane('msg'); sheet.inert = false; sheet.setAttribute('aria-hidden', 'false'); sheet.classList.add('show'); setTimeout(() => $('#closeSheet').focus({ preventScroll: true }), 350); }
+function openSheet() { clearTimeout(S.sheetT); showPane('msg'); sheet.inert = false; sheet.setAttribute('aria-hidden', 'false'); sheet.classList.add('show'); setTimeout(() => $('#closeSheet').focus({ preventScroll: true }), 350); }
 function closeSheet() { sheet.classList.remove('show'); sheet.setAttribute('aria-hidden', 'true'); sheet.inert = true; }
 $('#closeSheet').addEventListener('click', closeSheet);
 $('#againBtn').addEventListener('click', resetExperience);
 document.addEventListener('keydown', e => { if (e.key === 'Escape' && sheet.classList.contains('show')) closeSheet(); });
 
-/* ===== Support the maker (UPI) and card links =====
-   Card making is free. The message sheet offers an optional thank-you by UPI straight to UPI_ID.
+/* ===== Card links =====
    When the server has CARD_SECRET set, each card link it signs carries ?s=..., and links are
    checked on open, so an edited link falls back to the default card. */
-const isIOS = /iP(hone|ad|od)/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
-const upiQuery = (a, note) => `pa=${UPI_ID}&pn=${encodeURIComponent(MAKER)}&am=${Number(a).toFixed(2)}&cu=INR&tn=${encodeURIComponent(String(note).slice(0, 50))}`;
-const isMobile = /Android|iPhone|iPad|iPod|Mobile|Silk|KAIOS/i.test(navigator.userAgent) || (navigator.maxTouchPoints > 1 && /Macintosh/.test(navigator.userAgent));
-const framed = (() => { try { return window.top !== window.self; } catch (e) { return true; } })();
-/* Payment apps only open from a phone, in the page itself (not inside a preview frame) */
-const canOpenApps = isMobile && !framed;
 function copyText(text, input, btn) {
   const done = () => { setStatus('Copied.'); if (btn) { const t = btn.textContent; btn.textContent = 'Copied'; setTimeout(() => { btn.textContent = t; }, 1500); } };
   const fail = () => { if (input) { input.focus(); input.select(); setStatus('Press and hold the link to copy it.'); } };
@@ -1226,61 +1152,6 @@ function copyText(text, input, btn) {
 }
 const setStatus = t => { $('#status').textContent = t || ''; };
 const post = (url, data) => fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) });
-
-document.querySelectorAll('.upiCode').forEach(el => { el.textContent = UPI_ID; });
-document.querySelectorAll('.makerName').forEach(el => { el.textContent = MAKER; });
-/* One tap to pay: the button opens the phone's UPI app with the amount filled in. Some apps
-   decline link-opened payments to a personal UPI ID (a QR scan of the same details goes
-   through), so a QR stays one tap away under the button, and opens by itself when someone
-   comes back from their app. Off a phone, the QR is the way to pay. */
-const qrPanel = open => { $('#qrPanel').hidden = !open; $('#qrToggle').setAttribute('aria-expanded', String(open)); };
-if (!canOpenApps) {
-  qrPanel(true); $('#qrToggle').hidden = true;
-  $('#step1').textContent = isMobile ? 'Open diyagram.vercel.app in your browser to pay with one tap, or scan this QR from another phone' : 'Open any UPI app on your phone';
-  if (!isMobile) { $('#step2').textContent = 'Tap Scan'; $('#step3').textContent = 'Point your phone at this QR'; }
-} else if (isIOS) $('#step1').textContent = 'Press and hold the QR, then tap Save to Photos';
-$('#qrToggle').addEventListener('click', () => { qrPanel($('#qrPanel').hidden); if (!$('#qrPanel').hidden) setTimeout(() => $('#qrPanel').scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'nearest' }), 40); });
-
-let amount = 3, payTapped = false, qrFor = '';
-/* The QR as a picture people can keep: QR code, amount and UPI ID on white */
-function qrPicture(link, amt) {
-  const qr = qrcode(0, 'M'); qr.addData(link); qr.make();
-  const n = qr.getModuleCount(), cell = Math.floor(540 / (n + 8)), size = cell * (n + 8), W2 = size, H2 = size + 150;
-  const c = document.createElement('canvas'); c.width = W2; c.height = H2; const g = c.getContext('2d');
-  g.fillStyle = '#fff'; g.fillRect(0, 0, W2, H2); g.fillStyle = '#111';
-  for (let r = 0; r < n; r++) for (let q = 0; q < n; q++) if (qr.isDark(r, q)) g.fillRect((q + 4) * cell, (r + 4) * cell, cell, cell);
-  g.textAlign = 'center'; g.fillStyle = '#2a1306';
-  g.font = '700 40px "Hind", system-ui, sans-serif'; g.fillText(`Scan to pay ₹${amt}`, W2 / 2, size + 34);
-  g.font = '500 26px "Hind", system-ui, sans-serif'; g.fillStyle = '#5a4632'; g.fillText(UPI_ID, W2 / 2, size + 78);
-  g.font = '600 24px "Eczar", Georgia, serif'; g.fillStyle = '#b07a1c'; g.fillText('Diyagram · Support the maker', W2 / 2, size + 120);
-  return c.toDataURL('image/png');
-}
-function paintPay() {
-  const ok = amount >= 1, link = 'upi://' + 'pay?' + upiQuery(ok ? amount : 1, 'Diyagram thank-you');
-  const pb = $('#supPay'); pb.textContent = !ok ? 'Enter an amount' : canOpenApps ? `Pay ₹${amount}` : `Scan the QR to pay ₹${amount}`;
-  pb.href = ok && canOpenApps ? link : '#';
-  if (ok && typeof qrcode === 'function' && qrFor !== link) { try { $('#qrImg').src = qrPicture(link, amount); qrFor = link; } catch (e) {} }
-  $('#qrImg').style.opacity = ok ? 1 : .25;
-}
-document.querySelectorAll('.chip').forEach(c => c.addEventListener('click', () => {
-  document.querySelectorAll('.chip').forEach(x => x.setAttribute('aria-pressed', String(x === c)));
-  const other = c.dataset.amt === 'other'; $('#otherRow').hidden = !other;
-  amount = other ? Math.floor(Number($('#otherAmt').value) || 0) : Number(c.dataset.amt);
-  if (other) $('#otherAmt').focus(); paintPay();
-}));
-$('#otherAmt').addEventListener('input', e => { amount = Math.max(0, Math.min(10000, Math.floor(Number(e.target.value) || 0))); paintPay(); });
-$('#supPay').addEventListener('click', e => {
-  if (amount < 1) { e.preventDefault(); return; }
-  if (!canOpenApps) { e.preventDefault(); const q = $('#qrImg'); q.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'center' }); q.classList.remove('pulse'); void q.offsetWidth; q.classList.add('pulse'); return; }
-  payTapped = true;
-});
-$('#copyUpi').addEventListener('click', () => { payTapped = true; copyText(UPI_ID, null, $('#copyUpi')); });
-document.addEventListener('visibilitychange', () => {
-  if (document.visibilityState !== 'visible' || !payTapped) return;
-  $('#thanks').hidden = false; $('#thanks').textContent = 'Thank you for the support 🙏 If it didn’t go through, scan the QR below.';
-  qrPanel(true);
-});
-paintPay();
 
 /* A card that arrived with custom names or a message is shown only once the server vouches for it */
 function checkCard() {
