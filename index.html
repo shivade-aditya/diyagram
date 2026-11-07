@@ -1187,9 +1187,10 @@ function buildLink() {
 }
 function updateLink() {
   $('#count').textContent = `${fMsg.value.length} / 150`;
-  const link = buildLink(), from = fFrom.value.trim() || 'Someone';
+  const link = buildLink();
   $('#linkBox').value = link;
-  $('#waBtn').href = 'https://wa.me/?text=' + encodeURIComponent(`🪔 ${from} sent you a Diyagram.\nLight three diyas to receive three blessings:\n${link}`);
+  /* Just the link: WhatsApp turns it into the big preview card, whose title already names who it's from */
+  $('#waBtn').href = 'https://wa.me/?text=' + encodeURIComponent(link);
 }
 function showShare(on) { $('#shareBox').hidden = !on; $('#lockedActions').hidden = on; }
 /* Ask the server to sign this card; without a server (or a secret) the plain link is used */
