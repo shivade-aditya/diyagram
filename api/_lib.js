@@ -14,8 +14,8 @@ function safeEqual(a, b) {
   const A = Buffer.from(String(a)), B = Buffer.from(String(b));
   return A.length === B.length && crypto.timingSafeEqual(A, B);
 }
-// Must match how the page trims the fields (to 30, from 30, msg 150).
-const canon = (to, from, msg) => [to, from, msg].map((v, i) => String(v || '').trim().slice(0, i < 2 ? 30 : 150)).join('\n');
+// Must match how the page trims the fields (to 30, from 30, msg 200).
+const canon = (to, from, msg) => [to, from, msg].map((v, i) => String(v || '').trim().slice(0, i < 2 ? 30 : 200)).join('\n');
 const cardSig = (to, from, msg) => hmac(CARD_SECRET, 'card1:' + canon(to, from, msg)).slice(0, 22);
 
 async function readBody(req) {
@@ -44,6 +44,6 @@ async function redis(cmd) {
 const ALPHA = '23456789abcdefghijkmnpqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ';   // no 0/O, 1/l/I
 const newId = () => Array.from(crypto.randomBytes(7), b => ALPHA[b % ALPHA.length]).join('');
 const ID_RE = /^[2-9a-zA-Z]{7}$/;
-const cleanCard = b => ({ to: String(b.to || '').trim().slice(0, 30), from: String(b.from || '').trim().slice(0, 30), msg: String(b.msg || '').trim().slice(0, 150) });
+const cleanCard = b => ({ to: String(b.to || '').trim().slice(0, 30), from: String(b.from || '').trim().slice(0, 30), msg: String(b.msg || '').trim().slice(0, 200) });
 
 module.exports = { CARD_SECRET, safeEqual, cardSig, readBody, send, STORE, redis, newId, ID_RE, cleanCard };
