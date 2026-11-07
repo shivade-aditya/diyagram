@@ -7,6 +7,12 @@
 <meta name="description" content="Light three diyas to receive three blessings from Ganesha, Saraswati and Lakshmi. Make your own Diwali card and send it on WhatsApp.">
 <meta name="theme-color" content="#0c0706">
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="manifest" href="/manifest.webmanifest">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<meta name="apple-mobile-web-app-title" content="Diyagram">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Diyagram">
 <meta property="og:url" content="https://diyagram.vercel.app/">
@@ -61,7 +67,7 @@ body{height:100%;display:flex;flex-direction:column;justify-content:center;backg
   /* keep the window a sensible shape on very tall screens (and "Desktop site" on phones) */
   max-height:calc(min(100vw,520px)*2.3);
   display:grid;grid-template-rows:auto minmax(0,1fr) auto auto;
-  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:8px 0}
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:calc(8px + env(safe-area-inset-top,0px)) 0}
 .top{display:flex;align-items:center;justify-content:space-between;gap:8px}
 .eyebrow{margin:0;font-family:var(--sanskrit);font-size:1.05rem;color:var(--gold)}
 .sound{display:inline-flex;align-items:center;gap:6px;min-height:34px;padding:0 12px;border-radius:999px;cursor:pointer;
@@ -161,6 +167,9 @@ h1 .who{color:var(--gold)}
 .actions{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:16px}
 .actions .wa{grid-column:1/-1}
 .linkbox{box-sizing:border-box;width:100%;margin-top:10px;padding:8px 10px;border-radius:8px;border:1px solid var(--line);background:#120906;color:var(--muted);font:400 .8rem var(--body)}
+.install{margin-top:14px}
+.install-help{margin:10px 0 0;font-size:.86rem;line-height:1.45;color:var(--muted)}
+.install-help b{color:var(--text);font-weight:600}
 .brand{margin:22px 0 0;text-align:center;font-size:.8rem;letter-spacing:.04em;color:var(--muted)}
 .brand b{font-family:var(--display);font-weight:600;font-size:.95rem;letter-spacing:.02em;color:var(--gold)}
 #shareBox{margin-top:16px}
@@ -253,6 +262,10 @@ h1 .who{color:var(--gold)}
         <h3>Send these blessings to someone</h3>
         <p>Make your own card in 30 seconds. Free.</p>
         <button class="btn gold block" id="openMaker" type="button">Make your own card</button>
+      </div>
+      <div class="install" id="installBox" hidden>
+        <button class="btn block" id="installBtn" type="button"><svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path fill="currentColor" d="M12 3a1 1 0 0 1 1 1v8.6l2.3-2.3a1 1 0 1 1 1.4 1.4l-4 4a1 1 0 0 1-1.4 0l-4-4a1 1 0 1 1 1.4-1.4L11 12.6V4a1 1 0 0 1 1-1zM5 19a1 1 0 0 1 1-1h12a1 1 0 1 1 0 2H6a1 1 0 0 1-1-1z"/></svg>Add Diyagram to your home screen</button>
+        <p class="install-help" id="installHelp" hidden>On iPhone, tap the <b>Share</b> button <span aria-hidden="true">(□↑)</span> in Safari, then <b>Add to Home Screen</b>. Diyagram then opens like an app, without the browser.</p>
       </div>
       <p class="brand"><b>Diyagram</b> · Send a little light</p>
     </section>
@@ -1230,6 +1243,27 @@ function measure() {
 let mt = 0; const schedule = () => { clearTimeout(mt); mt = setTimeout(measure, 120); };
 addEventListener('resize', schedule);
 if (window.ResizeObserver) new ResizeObserver(schedule).observe(stage);
+
+/* ===== Install as an app =====
+   Android (Chrome, Edge, Samsung Internet) offers its own install prompt, which the button
+   opens; on iPhone the button explains Share → Add to Home Screen. Hidden once installed. */
+const installed = () => matchMedia('(display-mode: standalone)').matches || navigator.standalone === true;
+const iosBrowser = /iP(hone|ad|od)/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+const inFrame = (() => { try { return window.top !== window.self; } catch (e) { return true; } })();
+let installPrompt = null;
+if (!installed() && !inFrame && iosBrowser) $('#installBox').hidden = false;
+addEventListener('beforeinstallprompt', e => { e.preventDefault(); installPrompt = e; if (!installed()) $('#installBox').hidden = false; });
+$('#installBtn').addEventListener('click', async () => {
+  if (installPrompt) {
+    installPrompt.prompt();
+    try { const c = await installPrompt.userChoice; if (c && c.outcome === 'accepted') $('#installBox').hidden = true; } catch (e) {}
+    installPrompt = null;
+  } else $('#installHelp').hidden = !$('#installHelp').hidden;
+});
+addEventListener('appinstalled', () => { $('#installBox').hidden = true; });
+if ('serviceWorker' in navigator && !inFrame && (location.protocol === 'https:' || location.hostname === 'localhost')) {
+  addEventListener('load', () => { try { navigator.serviceWorker.register('/sw.js').catch(() => {}); } catch (e) {} });
+}
 
 /* ===== Quiet in the background =====
    Another tab, another app or another window: stop the drone, suspend all sound and pause the

@@ -1,0 +1,18 @@
+{
+  "id": "/",
+  "name": "Diyagram · Happy Diwali",
+  "short_name": "Diyagram",
+  "description": "Light three diyas to receive three blessings from Ganesha, Saraswati and Lakshmi, and send your own Diwali card.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#0c0706",
+  "theme_color": "#0c0706",
+  "lang": "en-IN",
+  "categories": ["lifestyle", "entertainment"],
+  "icons": [
+    { "src": "/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}

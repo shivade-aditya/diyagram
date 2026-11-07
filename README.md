@@ -9,6 +9,13 @@ A Diwali wish you send as a link: light three diyas to receive blessings from Ga
   - `check` tells the page whether a card link is genuine (edited links show the default card)
   - `config` says whether signing is on
 
+## Install as an app
+`manifest.webmanifest`, the icons and `sw.js` make the site installable: Chrome on Android offers
+"Install app" (or the page's "Add Diyagram to your home screen" button), and on iPhone it's
+Share → Add to Home Screen. It then opens full-screen with its own icon. `sw.js` keeps a copy of
+the page and pictures so it reopens fast and works offline; videos and `/api` are left to the browser.
+When changing `sw.js`, bump `CACHE` so phones drop the old copy.
+
 ## Settings
 In Vercel → Project → Settings → Environment Variables:
 
