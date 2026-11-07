@@ -1101,7 +1101,7 @@ function setHint(text, buttons = []) {
   for (const [label, fn] of buttons) { const b = document.createElement('button'); b.type = 'button'; b.className = 'pill'; b.textContent = label; b.addEventListener('click', fn); h.appendChild(b); }
 }
 const introText = now => setBlessing('', 'Three diyas, three blessings', '', 'Light each diya to receive a blessing from Ganesha, Saraswati and Lakshmi.', now);
-const trioText = () => setBlessing('शुभ दीपावली', 'All three blessings are yours', 'Tap the window for fireworks', `${card.to ? card.to + ', may' : 'May'} this Diwali light up every corner of your life.`);
+const trioText = () => setBlessing('शुभ दीपावली', 'All three blessings are yours', 'Tap the window for fireworks', '“Be the light of your life.” — Sadhguru');
 const trioHint = () => setHint('', [['Read the message', openSheet]]);
 
 function wake() { if (audio() && S.lit > 0 && soundOn) startDrone(); }
